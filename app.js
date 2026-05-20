@@ -1,358 +1,298 @@
-// Histori-IA Application Logic
-// No external frameworks, vanilla JavaScript
+/* ============================================================
+   HISTORI-IA - LÓGICA DE LA APLICACIÓN
+   Manejo de búsqueda, temas, síntesis de voz y funcionalidades
+   ============================================================ */
 
-class HistoriIA {
-    constructor() {
-        this.currentContent = null;
-        this.speechSynthesis = window.speechSynthesis;
-        this.currentUtterance = null;
-        this.isPlaying = false;
-        this.isDarkTheme = false;
-        this.isHighContrast = false;
-        
-        this.initializeElements();
-        this.initializeEventListeners();
-        this.loadStoredPreferences();
-        this.populateSelector();
-        this.initializeMermaid();
+document.addEventListener('DOMContentLoaded', function() {
+    // ========== ELEMENTOS DEL DOM ==========
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const contentSelector = document.getElementById('contentSelector');
+    const contentCard = document.getElementById('contentCard');
+    const themeToggle = document.getElementById('themeToggle');
+    const speakBtn = document.getElementById('speakBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const printBtn = document.getElementById('printBtn');
+
+    // ========== VARIABLES GLOBALES ==========
+    let currentContent = null;
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+    let isDarkMode = localStorage.getItem('theme') === 'dark';
+    let isHighContrast = localStorage.getItem('contrast') === 'high';
+
+    // ========== INICIALIZACIÓN ==========
+    function init() {
+        applyTheme();
+        populateSelector();
+        attachEventListeners();
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
     }
 
-    // ===== DOM INITIALIZATION =====
-    
-    initializeElements() {
-        // Search
-        this.searchInput = document.getElementById('searchInput');
-        this.searchResults = document.getElementById('searchResults');
+    // ========== GESTIÓN DE TEMAS ==========
+    function applyTheme() {
+        const theme = isDarkMode ? 'dark' : 'light';
+        const contrast = isHighContrast ? 'high' : 'normal';
         
-        // Selector
-        this.contentSelector = document.getElementById('contentSelector');
-        
-        // Content Card
-        this.contentCard = document.getElementById('contentCard');
-        this.cardTitle = document.querySelector('.card-title');
-        this.cardCategory = document.querySelector('.card-category');
-        this.cardPeriod = document.querySelector('.card-period');
-        this.cardCat = document.querySelector('.card-cat');
-        this.cardDescription = document.querySelector('.card-description');
-        this.cardLearningGoal = document.querySelector('.card-learning-goal');
-        this.diagramContainer = document.getElementById('diagramContainer');
-        
-        // Controls
-        this.speakBtn = document.getElementById('speakBtn');
-        this.stopBtn = document.getElementById('stopBtn');
-        this.printBtn = document.getElementById('printBtn');
-        
-        // Theme
-        this.themeToggle = document.getElementById('themeToggle');
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-contrast', contrast);
+        updateThemeButtonText();
     }
 
-    initializeEventListeners() {
-        // Search
-        this.searchInput.addEventListener('input', (e) => this.handleSearch(e));
+    function toggleTheme() {
+        isDarkMode = !isDarkMode;
+        isHighContrast = !isHighContrast;
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        localStorage.setItem('contrast', isHighContrast ? 'high' : 'normal');
+        applyTheme();
         
-        // Selector
-        this.contentSelector.addEventListener('change', (e) => this.handleSelectChange(e));
-        
-        // Controls
-        this.speakBtn.addEventListener('click', () => this.handleSpeak());
-        this.stopBtn.addEventListener('click', () => this.handleStop());
-        this.printBtn.addEventListener('click', () => this.handlePrint());
-        
-        // Theme
-        this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
-    }
-
-    // ===== THEME MANAGEMENT =====
-    
-    toggleTheme() {
-        this.isDarkTheme = !this.isDarkTheme;
-        this.applyTheme();
-        localStorage.setItem('theme-dark', this.isDarkTheme);
-    }
-
-    applyTheme() {
-        const body = document.body;
-        
-        if (this.isDarkTheme) {
-            body.classList.add('dark-theme');
-            body.classList.remove('high-contrast');
-            this.isHighContrast = false;
-        } else {
-            body.classList.remove('dark-theme');
-        }
-        
-        this.updateThemeButton();
-    }
-
-    loadStoredPreferences() {
-        const darkTheme = localStorage.getItem('theme-dark') === 'true';
-        if (darkTheme) {
-            this.isDarkTheme = true;
-            this.applyTheme();
+        // Re-renderizar diagrama
+        if (currentContent) {
+            renderDiagram(currentContent.mermaid);
         }
     }
 
-    updateThemeButton() {
-        const themes = this.isDarkTheme ? '☀️ Normal' : '🌓 Contraste';
-        this.themeToggle.textContent = themes;
+    function updateThemeButtonText() {
+        const texts = {
+            light: '🌓 Contraste',
+            dark: '☀️ Claro'
+        };
+        themeToggle.textContent = isDarkMode ? texts.dark : texts.light;
     }
 
-    // ===== SEARCH FUNCTIONALITY =====
-    
-    handleSearch(event) {
-        const query = event.target.value.toLowerCase().trim();
-        
-        if (query.length === 0) {
-            this.searchResults.innerHTML = '';
+    // ========== POBLACIÓN DEL SELECTOR ==========
+    function populateSelector() {
+        if (typeof historicalContent === 'undefined') {
+            console.error('historicalContent no está definido en data.js');
             return;
         }
-        
-        const results = this.searchContent(query);
-        this.displaySearchResults(results);
-    }
 
-    searchContent(query) {
-        return historicalContent.filter(item => {
-            const searchIn = `
-                ${item.title} 
-                ${item.category} 
-                ${item.description} 
-                ${item.period}
-            `.toLowerCase();
-            
-            return searchIn.includes(query);
+        contentSelector.innerHTML = '<option value="">-- Selecciona un contenido --</option>';
+        
+        historicalContent.forEach(content => {
+            const option = document.createElement('option');
+            option.value = content.id;
+            option.textContent = content.title;
+            contentSelector.appendChild(option);
         });
     }
 
-    displaySearchResults(results) {
-        if (results.length === 0) {
-            this.searchResults.innerHTML = '<p style="color: var(--text-secondary);">No se encontraron resultados.</p>';
+    // ========== BÚSQUEDA Y FILTRADO ==========
+    function performSearch(query) {
+        if (!query.trim()) {
+            searchResults.innerHTML = '';
             return;
         }
-        
-        this.searchResults.innerHTML = results.map(item => `
-            <div class="search-result-item" role="button" tabindex="0" 
-                 data-id="${item.id}"
-                 onclick="app.selectContentById('${item.id}')"
-                 onkeypress="if(event.key==='Enter') app.selectContentById('${item.id}')">
-                <div class="search-result-title">${item.title}</div>
-                <div class="search-result-category">${item.category} • ${item.period}</div>
+
+        const lowerQuery = query.toLowerCase();
+        const results = historicalContent.filter(content => 
+            content.title.toLowerCase().includes(lowerQuery) ||
+            content.category.toLowerCase().includes(lowerQuery) ||
+            content.description.toLowerCase().includes(lowerQuery)
+        );
+
+        renderSearchResults(results);
+    }
+
+    function renderSearchResults(results) {
+        if (results.length === 0) {
+            searchResults.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: var(--spacing-lg);">No se encontraron resultados.</p>';
+            return;
+        }
+
+        searchResults.innerHTML = results.map(content => `
+            <div class="search-result-item" tabindex="0" data-id="${content.id}">
+                <strong>${content.title}</strong>
+                <small>${content.category} • ${content.period}</small>
             </div>
         `).join('');
+
+        // Agregar listeners a los resultados
+        document.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', () => selectContentById(item.dataset.id));
+            item.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectContentById(item.dataset.id);
+                }
+            });
+        });
     }
 
-    // ===== CONTENT SELECTION =====
-    
-    populateSelector() {
-        const options = historicalContent.map(item => 
-            `<option value="${item.id}">${item.title}</option>`
-        ).join('');
-        
-        this.contentSelector.innerHTML = '<option value="">-- Selecciona un contenido --</option>' + options;
-    }
-
-    handleSelectChange(event) {
-        const id = event.target.value;
-        if (id) {
-            this.selectContentById(id);
-        }
-    }
-
-    selectContentById(id) {
-        const content = historicalContent.find(item => item.id === id);
+    // ========== SELECCIÓN DE CONTENIDO ==========
+    function selectContentById(id) {
+        const content = historicalContent.find(c => c.id === id);
         if (content) {
-            this.displayContent(content);
-            this.contentSelector.value = id;
-            this.searchResults.innerHTML = '';
-            this.searchInput.value = '';
-            
-            // Scroll to content card
-            this.contentCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            currentContent = content;
+            contentSelector.value = id;
+            displayContent(content);
         }
     }
 
-    displayContent(content) {
-        this.currentContent = content;
-        
-        // Update card
-        this.cardTitle.textContent = content.title;
-        this.cardCategory.textContent = content.category;
-        this.cardPeriod.textContent = content.period;
-        this.cardCat.textContent = content.category;
-        this.cardDescription.textContent = content.description;
-        this.cardLearningGoal.textContent = content.learningGoal;
-        
-        // Update diagram
-        this.updateDiagram(content.mermaid);
-        
-        // Show card
-        this.contentCard.classList.remove('hidden');
-        
-        // Reset speech
-        this.stopSpeech();
-        this.updateSpeechButtons();
-        
-        // Update page title and meta
-        document.title = `${content.title} - Histori-IA`;
+    function displayContent(content) {
+        // Actualizar tarjeta
+        document.querySelector('.card-title').textContent = content.title;
+        document.querySelector('.card-category').textContent = content.category;
+        document.querySelector('.card-period').textContent = content.period;
+        document.querySelector('.card-cat').textContent = content.category;
+        document.querySelector('.card-description').textContent = content.description;
+        document.querySelector('.card-learning-goal').textContent = content.learningGoal;
+
+        // Renderizar diagrama
+        renderDiagram(content.mermaid);
+
+        // Mostrar tarjeta
+        contentCard.classList.remove('hidden');
+        contentCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Resetear botones de audio
+        stopSpeech();
+        speakBtn.classList.remove('hidden');
+        stopBtn.classList.add('hidden');
     }
 
-    updateDiagram(mermaidCode) {
-        this.diagramContainer.textContent = mermaidCode;
+    // ========== RENDERIZADO DE DIAGRAMAS ==========
+    function renderDiagram(mermaidCode) {
+        const container = document.getElementById('diagramContainer');
+        container.innerHTML = mermaidCode;
+        container.setAttribute('role', 'img');
+        container.setAttribute('aria-label', 'Mapa conceptual interactivo');
         
-        // Re-render mermaid
-        if (window.mermaid) {
-            try {
-                window.mermaid.contentLoaderContentNotFound = [];
-                window.mermaid.run();
-            } catch (e) {
-                console.error('Error rendering diagram:', e);
-            }
-        }
+        mermaid.contentLoaderLevel = 0;
+        mermaid.initialize({ startOnLoad: true, theme: isDarkMode ? 'dark' : 'default' });
+        mermaid.run();
     }
 
-    // ===== SPEECH SYNTHESIS =====
-    
-    handleSpeak() {
-        if (!this.currentContent) return;
-        
-        if (this.isPlaying) {
-            this.resumeSpeech();
+    // ========== SÍNTESIS DE VOZ ==========
+    function speak(text) {
+        // Cancelar cualquier reproducción anterior
+        speechSynthesis.cancel();
+
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.lang = 'es-ES';
+        currentUtterance.rate = 0.9;
+        currentUtterance.pitch = 1;
+        currentUtterance.volume = 1;
+
+        currentUtterance.onstart = () => {
+            speakBtn.classList.add('hidden');
+            stopBtn.classList.remove('hidden');
+            speakBtn.setAttribute('aria-disabled', 'true');
+            stopBtn.setAttribute('aria-disabled', 'false');
+        };
+
+        currentUtterance.onend = () => {
+            stopSpeech();
+        };
+
+        currentUtterance.onerror = (event) => {
+            console.error('Error en síntesis de voz:', event.error);
+            stopSpeech();
+            alert('Error al reproducir audio. Asegúrate de que tu navegador soporta Web Speech API.');
+        };
+
+        speechSynthesis.speak(currentUtterance);
+    }
+
+    function stopSpeech() {
+        speechSynthesis.cancel();
+        speakBtn.classList.remove('hidden');
+        stopBtn.classList.add('hidden');
+        speakBtn.setAttribute('aria-disabled', 'false');
+        stopBtn.setAttribute('aria-disabled', 'true');
+    }
+
+    // ========== EXPORTACIÓN A PDF ==========
+    function exportToPDF() {
+        if (!currentContent) {
+            alert('Selecciona un contenido primero');
             return;
         }
-        
-        const text = this.currentContent.speech;
-        const utterance = new SpeechSynthesisUtterance(text);
-        
-        utterance.lang = 'es-ES';
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.volume = 1;
-        
-        utterance.onstart = () => {
-            this.isPlaying = true;
-            this.updateSpeechButtons();
-        };
-        
-        utterance.onend = () => {
-            this.isPlaying = false;
-            this.updateSpeechButtons();
-        };
-        
-        utterance.onerror = (event) => {
-            console.error('Speech error:', event);
-            this.isPlaying = false;
-            this.updateSpeechButtons();
-        };
-        
-        this.currentUtterance = utterance;
-        this.speechSynthesis.speak(utterance);
-        this.updateSpeechButtons();
-    }
 
-    handleStop() {
-        this.stopSpeech();
-    }
-
-    stopSpeech() {
-        this.speechSynthesis.cancel();
-        this.isPlaying = false;
-        this.currentUtterance = null;
-        this.updateSpeechButtons();
-    }
-
-    resumeSpeech() {
-        if (this.speechSynthesis.paused) {
-            this.speechSynthesis.resume();
-            this.isPlaying = true;
-            this.updateSpeechButtons();
-        }
-    }
-
-    updateSpeechButtons() {
-        if (this.isPlaying) {
-            this.speakBtn.classList.add('hidden');
-            this.stopBtn.classList.remove('hidden');
-        } else {
-            this.speakBtn.classList.remove('hidden');
-            this.stopBtn.classList.add('hidden');
-        }
-    }
-
-    // ===== PRINT / PDF EXPORT =====
-    
-    handlePrint() {
-        if (!this.currentContent) return;
-        
-        // Open print dialog
+        // El navegador abrirá el diálogo de impresión
+        // Los estilos print.css se encargarán del resto
         window.print();
     }
 
-    // ===== KEYBOARD NAVIGATION =====
-    
-    handleKeyboard(event) {
-        // Escape to stop speech
-        if (event.key === 'Escape') {
-            this.stopSpeech();
-        }
-        
-        // Alt + S to speak
-        if (event.altKey && event.key === 's') {
-            event.preventDefault();
-            this.handleSpeak();
-        }
-        
-        // Alt + T to toggle theme
-        if (event.altKey && event.key === 't') {
-            event.preventDefault();
-            this.toggleTheme();
-        }
+    // ========== GESTIÓN DE EVENTOS ==========
+    function attachEventListeners() {
+        // Búsqueda en tiempo real
+        searchInput.addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+
+        // Selector desplegable
+        contentSelector.addEventListener('change', (e) => {
+            if (e.target.value) {
+                selectContentById(e.target.value);
+            }
+        });
+
+        // Botón de tema
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Botones de audio
+        speakBtn.addEventListener('click', () => {
+            if (currentContent) {
+                speak(currentContent.speech);
+            }
+        });
+
+        stopBtn.addEventListener('click', stopSpeech);
+
+        // Botón de impresión
+        printBtn.addEventListener('click', exportToPDF);
+
+        // Atajos de teclado
+        document.addEventListener('keydown', (e) => {
+            // Alt+S: Hablar
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                speakBtn.click();
+            }
+            // Alt+T: Cambiar tema
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                themeToggle.click();
+            }
+            // Escape: Cerrar búsqueda
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+                searchInput.focus();
+            }
+        });
+
+        // Prevenir submisión del selector
+        contentSelector.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
     }
 
-    // ===== MERMAID INITIALIZATION =====
+    // ========== UTILIDADES DE ACCESIBILIDAD ==========
     
-    initializeMermaid() {
-        if (window.mermaid) {
-            window.mermaid.initialize({
-                startOnLoad: true,
-                theme: 'default',
-                securityLevel: 'loose',
-                flowchart: {
-                    useMaxWidth: true,
-                    htmlLabels: true
-                }
-            });
-        }
-    }
-
-    // ===== ACCESSIBILITY =====
-    
-    announceToScreenReaders(message) {
+    // Anuncio de contenido dinámico para lectores de pantalla
+    function announceToScreenReader(message) {
         const announcement = document.createElement('div');
         announcement.setAttribute('role', 'status');
         announcement.setAttribute('aria-live', 'polite');
         announcement.className = 'sr-only';
         announcement.textContent = message;
-        
         document.body.appendChild(announcement);
         
-        setTimeout(() => {
-            announcement.remove();
-        }, 1000);
+        setTimeout(() => announcement.remove(), 1000);
     }
-}
 
-// Initialize application when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.app = new HistoriIA();
-    console.log('Histori-IA initialized');
-});
+    // Navegación mejorada por teclado
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            // Permitir navegación normal
+            return;
+        }
+    });
 
-// Handle page visibility for speech
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden && window.app && window.app.isPlaying) {
-        window.app.stopSpeech();
-    }
+    // ========== INICIAR APLICACIÓN ==========
+    init();
 });
