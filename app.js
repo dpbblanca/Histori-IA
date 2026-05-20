@@ -19,31 +19,40 @@ document.addEventListener('DOMContentLoaded', function() {
     let speechSynthesis = window.speechSynthesis;
     let currentUtterance = null;
     let isDarkMode = localStorage.getItem('theme') === 'dark';
-    let isHighContrast = localStorage.getItem('contrast') === 'high';
 
     // ========== INICIALIZACIÓN ==========
     function init() {
+        // Initialize Mermaid FIRST
+        if (typeof mermaid !== 'undefined') {
+            mermaid.initialize({ 
+                startOnLoad: false,
+                theme: 'default',
+                securityLevel: 'loose',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true,
+                    rankSpacing: 120,
+                    nodeSpacing: 150,
+                    curve: 'linear'
+                }
+            });
+        }
+        
         applyTheme();
         populateSelector();
         attachEventListeners();
-        mermaid.initialize({ startOnLoad: true, theme: 'default' });
     }
 
     // ========== GESTIÓN DE TEMAS ==========
     function applyTheme() {
         const theme = isDarkMode ? 'dark' : 'light';
-        const contrast = isHighContrast ? 'high' : 'normal';
-        
         document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.setAttribute('data-contrast', contrast);
         updateThemeButtonText();
     }
 
     function toggleTheme() {
         isDarkMode = !isDarkMode;
-        isHighContrast = !isHighContrast;
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        localStorage.setItem('contrast', isHighContrast ? 'high' : 'normal');
         applyTheme();
         
         // Re-renderizar diagrama
@@ -154,13 +163,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== RENDERIZADO DE DIAGRAMAS ==========
     function renderDiagram(mermaidCode) {
         const container = document.getElementById('diagramContainer');
-        container.innerHTML = mermaidCode;
+        
+        // Limpiar contenedor
+        container.innerHTML = '';
+        
+        // Insertar código Mermaid
+        container.textContent = mermaidCode;
         container.setAttribute('role', 'img');
         container.setAttribute('aria-label', 'Mapa conceptual interactivo');
         
-        mermaid.contentLoaderLevel = 0;
-        mermaid.initialize({ startOnLoad: true, theme: isDarkMode ? 'dark' : 'default' });
-        mermaid.run();
+        // Renderizar con Mermaid
+        if (typeof mermaid !== 'undefined') {
+            try {
+                mermaid.run();
+            } catch (e) {
+                console.error('Error rendering mermaid:', e);
+            }
+        }
     }
 
     // ========== SÍNTESIS DE VOZ ==========
@@ -209,8 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // El navegador abrirá el diálogo de impresión
-        // Los estilos print.css se encargarán del resto
         window.print();
     }
 
@@ -284,14 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => announcement.remove(), 1000);
     }
-
-    // Navegación mejorada por teclado
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Tab') {
-            // Permitir navegación normal
-            return;
-        }
-    });
 
     // ========== INICIAR APLICACIÓN ==========
     init();
