@@ -513,33 +513,44 @@ section:last-child {
 }
 
 /* ============================================================
-   DIAGRAMA MERMAID
+   DIAGRAMA MERMAID - MÁS GRANDE Y MEJOR VISIBLE
    ============================================================ */
 
 .diagram-section {
     margin: var(--spacing-xl) 0;
     padding: var(--spacing-lg);
     background-color: var(--color-bg);
-    border: 1px solid var(--color-border-light);
+    border: 2px solid var(--color-border-light);
     border-radius: var(--border-radius-md);
-    overflow-x: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .diagram-section h3 {
     margin-top: 0;
     margin-bottom: var(--spacing-lg);
     color: var(--color-primary);
+    width: 100%;
 }
 
 .mermaid {
+    width: 100%;
     display: flex;
     justify-content: center;
-    min-height: 300px;
+    align-items: center;
+    min-height: 450px;
+    background-color: var(--color-bg);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    overflow: auto;
 }
 
-.mermaid svg {
-    max-width: 100%;
-    height: auto;
+.mermaid > svg {
+    max-width: 100% !important;
+    height: auto !important;
+    width: auto !important;
 }
 
 @media (max-width: 768px) {
@@ -549,7 +560,14 @@ section:last-child {
     }
     
     .mermaid {
-        min-height: 200px;
+        min-height: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mermaid {
+        min-height: 250px;
+        padding: var(--spacing-md);
     }
 }
 
