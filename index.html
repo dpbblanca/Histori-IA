@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mapas conceptuales dinámicos para Historia de España de 2.º de Bachillerato">
+    <title>Histori-IA - Mapas Conceptuales de Historia</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="logo">Histori-IA</h1>
+            <p class="tagline">Mapas conceptuales dinámicos para comprender relaciones históricas complejas</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav" aria-label="Navegación principal">
+        <div class="nav-container">
+            <button id="themeToggle" class="theme-btn" aria-label="Cambiar tema de color">
+                🌓 Contraste
+            </button>
+            <a href="#privacidad" class="nav-link">Privacidad</a>
+            <a href="#ayuda" class="nav-link">Ayuda</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Introduction -->
+        <section class="intro-section" aria-labelledby="intro-title">
+            <h2 id="intro-title">¿Qué es Histori-IA?</h2>
+            <p class="intro-text">
+                Recurso educativo curado que visualiza conceptos e interrelaciones de la Historia de España de 2.º de Bachillerato 
+                mediante mapas conceptuales dinámicos. Los contenidos están seleccionados y diseñados manualmente para potenciar 
+                el aprendizaje significativo.
+            </p>
+        </section>
+
+        <!-- Search Bar -->
+        <section class="search-section" aria-labelledby="search-title">
+            <h2 id="search-title" class="sr-only">Búsqueda de contenidos</h2>
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Busca personajes, procesos o conceptos..."
+                    aria-label="Buscar contenidos históricos"
+                />
+                <span class="search-icon">🔍</span>
+            </div>
+            <div id="searchResults" class="search-results" role="region" aria-live="polite" aria-label="Resultados de búsqueda"></div>
+        </section>
+
+        <!-- Content Selector -->
+        <section class="selector-section" aria-labelledby="selector-title">
+            <h2 id="selector-title">Contenidos Disponibles</h2>
+            <select id="contentSelector" class="content-select" aria-label="Selecciona un contenido histórico">
+                <option value="">-- Selecciona un contenido --</option>
+            </select>
+        </section>
+
+        <!-- Content Card -->
+        <section id="contentCard" class="content-card hidden" aria-labelledby="card-title">
+            <div class="card-header">
+                <h2 id="card-title" class="card-title"></h2>
+                <span class="card-category"></span>
+            </div>
+            
+            <div class="card-meta">
+                <p><strong>Período:</strong> <span class="card-period"></span></p>
+                <p><strong>Categoría:</strong> <span class="card-cat"></span></p>
+            </div>
+
+            <div class="card-content">
+                <h3>Descripción</h3>
+                <p class="card-description"></p>
+
+                <h3>Utilidad Didáctica</h3>
+                <p class="card-learning-goal"></p>
+            </div>
+
+            <!-- Diagram Section -->
+            <div class="diagram-section">
+                <h3>Mapa Conceptual</h3>
+                <div id="diagramContainer" class="mermaid" role="img" aria-label="Mapa conceptual"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="card-controls">
+                <button id="speakBtn" class="btn btn-primary" aria-label="Escuchar explicación">
+                    🔊 Escuchar
+                </button>
+                <button id="stopBtn" class="btn btn-secondary hidden" aria-label="Detener audio">
+                    ⏹️ Detener
+                </button>
+                <button id="printBtn" class="btn btn-secondary" aria-label="Descargar como PDF">
+                    📥 Descargar PDF
+                </button>
+            </div>
+        </section>
+
+        <!-- Privacy Section -->
+        <section id="privacidad" class="privacy-section" aria-labelledby="privacy-title">
+            <h2 id="privacy-title">Privacidad y RGPD</h2>
+            <div class="privacy-content">
+                <p>
+                    <strong>Histori-IA no solicita nombre, correo electrónico, contraseñas, imágenes ni datos identificativos.</strong>
+                </p>
+                <p>
+                    El recurso está pensado para consulta directa mediante URL pública. No se recopilan, almacenan ni procesan 
+                    datos personales de ningún tipo.
+                </p>
+                <p>
+                    Si en el futuro se integran cuestionarios de evaluación, estos deberán aplicarse de forma completamente anónima 
+                    o mediante códigos no identificativos, sin vincular resultados a datos personales.
+                </p>
+                <p>
+                    El audio generado mediante Web Speech API se procesa localmente en tu dispositivo. No se registran ni envían 
+                    transcripciones a servidores externos.
+                </p>
+            </div>
+        </section>
+
+        <!-- Help Section -->
+        <section id="ayuda" class="help-section" aria-labelledby="help-title">
+            <h2 id="help-title">Ayuda y Uso</h2>
+            <div class="help-content">
+                <h3>Cómo usar Histori-IA</h3>
+                <ul>
+                    <li><strong>Busca:</strong> Escribe en el buscador para localizar contenidos por palabras clave.</li>
+                    <li><strong>Selecciona:</strong> Elige un contenido del desplegable de "Contenidos Disponibles".</li>
+                    <li><strong>Lee:</strong> Consulta la descripción, utilidad didáctica y mapa conceptual.</li>
+                    <li><strong>Escucha:</strong> Haz clic en "Escuchar" para oír una explicación en voz alta.</li>
+                    <li><strong>Descarga:</strong> Usa "Descargar PDF" para guardar el contenido.</li>
+                    <li><strong>Contraste:</strong> El botón "🌓 Contraste" cambia entre tema claro y oscuro.</li>
+                </ul>
+                <h3>Recomendaciones Pedagógicas</h3>
+                <ul>
+                    <li>Usar como recurso complementario en clase o estudio independiente.</li>
+                    <li>Lectura de mapas conceptuales para visualizar relaciones causales y jerarquías.</li>
+                    <li>Escucha del audio para reforzar conceptos de forma multisensorial.</li>
+                    <li>Descarga de contenidos para incluir en trabajos, esquemas o presentaciones.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Histori-IA. Recurso educativo de Historia de España para 2.º de Bachillerato.</p>
+        <p>Desarrollado sin IA generativa. Contenidos curados manualmente.</p>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
