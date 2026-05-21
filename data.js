@@ -10,8 +10,8 @@ const historicalContent = [
         category: "Proceso político",
         period: "1874-1902",
         learningGoal: "Comprender la relación entre monarquía, Constitución de 1876, turnismo, caciquismo y estabilidad política.",
-        description: "La Restauración fue el régimen político español establecido en 1874 tras la Primera República. Se caracterizó por la vuelta de la monarquía borbónica, la promulgación de la Constitución de 1876 y la implementación del sistema de turnismo dinástico entre los partidos Liberal y Conservador. Este sistema buscaba garantizar la estabilidad política mediante acuerdos entre la élite política, aunque se basaba en prácticas fraudulentas como el caciquismo. La Restauración duró hasta 1902, cuando Alfonso XIII alcanzó la mayoría de edad, y representó un período de relativa estabilidad que permitió ciertos avances económicos e institucionales, aunque sin resolver los problemas sociales y territoriales de fondo.",
-        speech: "La Restauración fue el régimen político español establecido en 1874 tras la Primera República. Se caracterizó por la vuelta de la monarquía borbónica con la Constitución de 1876 y el sistema de turnismo dinástico. Este régimen se basaba en acuerdos entre Conservadores y Liberales, aunque con prácticas de caciquismo electoral. La Restauración duró hasta 1902 y representó un período de estabilidad política, aunque sin resolver problemas sociales profundos.",
+        description: "La Restauración fue el régimen político español establecido en 1874 tras la Primera República. Se caracterizó por la vuelta de la monarquía borbónica, la promulgación de una nueva constitución moderada (1876) y el establecimiento del turnismo dinástico. Este sistema permitió una cierta estabilidad política durante 28 años, aunque basada en el fraude electoral y el caciquismo. La Restauración representó un compromiso entre modernización y tradición, intentando conciliar la monarquía con un régimen constitucional limitado.",
+        speech: "La Restauración fue el régimen político español establecido en 1874 tras la Primera República. Se caracterizó por la vuelta de la monarquía borbónica con la Constitución de 1876, que establecía una monarquía limitada. El sistema se basaba en el turnismo dinástico: conservadores y liberales se alternaban en el gobierno de forma pactada. Sin embargo, este sistema de aparente democracia se sustentaba en el fraude electoral y el caciquismo local. A pesar de estos problemas, la Restauración logró mantener cierta estabilidad política durante tres décadas, aunque a costa de la verdadera participación democrática.",
         mermaid: `flowchart TD
             A["🏛️ Restauración Borbónica<br/>(1874-1902)"] --> B["📋 Pilares Fundamentales"]
             A --> C["🎭 Principales Figuras"]
@@ -32,11 +32,11 @@ const historicalContent = [
             D --> F["Legado: Régimen<br/>hasta 1902"]
             E --> G["Problema: Crítica<br/>social creciente"]
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style D fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
-            style E fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
-            style F fill:#0f766e,stroke:#fff,stroke-width:2px,color:#fff
-            style G fill:#ea580c,stroke:#fff,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style D fill:#10b981,stroke:#000,stroke-width:2px,color:#fff
+            style E fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
+            style F fill:#059669,stroke:#fff,stroke-width:2px,color:#fff
+            style G fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#fff
         `
     },
 
@@ -46,8 +46,8 @@ const historicalContent = [
         category: "Personaje histórico",
         period: "1828-1897",
         learningGoal: "Analizar la función de Cánovas como artífice de la Restauración y su influencia en la política española del siglo XIX.",
-        description: "Antonio Cánovas del Castillo (1828-1897) fue el político español más influyente de la Restauración. Historiador, escritor y orador, Cánovas fue el ideólogo y artífice del sistema de la Restauración. Como presidente del Gobierno en múltiples ocasiones, implementó la Constitución de 1876 y el sistema de turnismo con el Partido Liberal de Sagasta. Su objetivo principal era crear un sistema político estable que evitase los conflictos y revoluciones del pasado. Cánovas fue también un defensor de la monarquía como institución estabilizadora. Su importancia radica en que logró establecer un régimen que, aunque basado en el fraude, proporcionó estabilidad institucional durante casi tres décadas. Fue asesinado en 1897 por un anarquista.",
-        speech: "Antonio Cánovas del Castillo fue el artífice político de la Restauración. Como historiador y presidente del gobierno, diseñó el sistema de turnismo y la Constitución de 1876. Su objetivo era crear estabilidad política mediante acuerdos entre la élite. Aunque su sistema se basaba en fraude electoral y caciquismo, logró mantener la monarquía constitucional durante casi treinta años.",
+        description: "Antonio Cánovas del Castillo (1828-1897) fue el político español más influyente de la Restauración. Historiador, escritor y orador de formación, Cánovas fue el ideólogo y artífice del régimen restauracionista. Como presidente del gobierno en varias ocasiones, diseñó los pilares institucionales de la Restauración: la Constitución de 1876 y el sistema de turnismo. Su visión conservadora priorizaba la estabilidad monárquica sobre la democracia real. Fue asesinado en 1897 por el anarquista Angiolillo, lo que marcó el inicio del declive del sistema.",
+        speech: "Antonio Cánovas del Castillo fue el artífice político de la Restauración. Como historiador y presidente del gobierno, diseñó el sistema de turnismo y la Constitución de 1876. Su pensamiento era moderadamente conservador: defendía una monarquía fuerte pero constitucional. Cánovas mantuvo una tensa relación con el Partido Liberal de Sagasta, pero ambos compartían el objetivo de mantener el orden y evitar revoluciones. Su asesinato en 1897 por un anarquista debilitó el sistema que había creado.",
         mermaid: `flowchart LR
             A["👤 Antonio Cánovas<br/>del Castillo<br/>(1828-1897)"] --> B["Formación y Carrera"]
             A --> C["Logros Políticos"]
@@ -71,9 +71,9 @@ const historicalContent = [
             C3 --> E
             C4 --> E
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style E fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
-            style D4 fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style E fill:#10b981,stroke:#000,stroke-width:2px,color:#fff
+            style D4 fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
         `
     },
 
@@ -83,8 +83,8 @@ const historicalContent = [
         category: "Personaje histórico",
         period: "1825-1900",
         learningGoal: "Comprender el rol de Sagasta como líder del Partido Liberal y su alternancia política con Cánovas.",
-        description: "Práxedes Mateo Sagasta (1825-1900) fue el líder del Partido Liberal español durante la Restauración. Junto a Antonio Cánovas del Castillo, protagonizó el sistema de turnismo dinástico que caracterizó el período 1874-1902. Mientras que Cánovas representaba el conservadurismo, Sagasta lideraba un liberalismo moderado que aceptaba los marcos fundamentales del régimen restaurador. Como presidente del Gobierno en varias ocasiones, Sagasta implementó reformas graduales como la Ley de Sufragio Universal de 1890, demostrando una mayor apertura a cambios sociales que los conservadores. Sin embargo, como Cánovas, también participaba en las prácticas de caciquismo y fraude electoral que caracterizaban el sistema. Sagasta falleció en 1900, poco antes del fin de la Restauración.",
-        speech: "Práxedes Mateo Sagasta fue el líder del Partido Liberal durante la Restauración. Junto a Cánovas, estableció el sistema de turnismo político. Aunque más progresista, Sagasta también participaba en el fraude electoral y caciquismo. Destacó por implementar reformas graduales, incluyendo el sufragio universal en 1890.",
+        description: "Práxedes Mateo Sagasta (1825-1900) fue el líder del Partido Liberal español durante la Restauración. Junto a Antonio Cánovas del Castillo, protagonizó el sistema de turnismo político. Aunque representaba el liberalismo más moderado, Sagasta aceptó los términos del pacto restauracionista. Como presidente del gobierno en varias ocasiones, implementó reformas graduales como el sufragio universal masculino en 1890. Sin embargo, también participó activamente en el fraude electoral y el caciquismo que caracterizaban el régimen.",
+        speech: "Práxedes Mateo Sagasta fue el líder del Partido Liberal durante la Restauración. Junto a Cánovas, estableció el sistema de turnismo político. Aunque más progresista que su rival conservador, Sagasta aceptó el marco institucional de la Restauración. Su principal logro fue la ampliación del sufragio a nivel universal masculino en 1890, una medida progresista para la época. Pero como Cánovas, Sagasta también utilizó el fraude electoral y el caciquismo para mantener su poder. Su muerte en 1900 coincidió con el inicio de la crisis del sistema.",
         mermaid: `flowchart LR
             A["👤 Práxedes Mateo Sagasta<br/>(1825-1900)"] --> B["Posición Política"]
             A --> C["Acciones Principales"]
@@ -106,9 +106,9 @@ const historicalContent = [
             
             C2 --> E["Logro: Expansión del voto"]
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style E fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
-            style D3 fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style E fill:#10b981,stroke:#000,stroke-width:2px,color:#fff
+            style D3 fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
         `
     },
 
@@ -118,8 +118,8 @@ const historicalContent = [
         category: "Proceso político",
         period: "1874-1902",
         learningGoal: "Comprender el mecanismo del turnismo como sistema de control político y sus limitaciones democráticas.",
-        description: "El turnismo dinástico fue el mecanismo político central de la Restauración. Se basaba en un acuerdo tácito entre los dos partidos principales: el Partido Conservador de Cánovas y el Partido Liberal de Sagasta. Ambos partidos se comprometían a alternar en el gobierno de forma pacífica, respetando los resultados electorales previamente establecidos. El sistema funcionaba mediante la manipulación electoral: el partido en el gobierno ganaba elecciones de forma asegurada gracias al caciquismo y el fraude. Cuando llegaba el momento del turno, el rey disolvía el Cortes, se convocaban nuevas elecciones, y el otro partido ganaba por mayoría. Este sistema garantizaba la estabilidad política y evitaba conflictos entre élites, pero socavaba los principios democráticos. El turnismo permitió que ambos partidos compartieran el poder de forma ordenada, aunque sin verdadera competencia electoral. Su colapso se produjo a principios del siglo XX, cuando surgieron nuevas fuerzas políticas que no aceptaban las reglas del juego.",
-        speech: "El turnismo dinástico fue un acuerdo entre Conservadores y Liberales para alternar en el gobierno. El rey disolvía las Cortes y nuevas elecciones daban la victoria al partido predestinado, gracias al caciquismo. Este sistema garantizaba estabilidad pero basándose en fraude electoral. El turnismo colapsó cuando surgieron nuevas fuerzas políticas.",
+        description: "El turnismo dinástico fue el mecanismo político central de la Restauración. Se basaba en un acuerdo tácito entre los dos partidos principales: el Partido Conservador de Cánovas y el Partido Liberal de Sagasta. El sistema funcionaba así: el rey disolvía las Cortes, nuevas elecciones daban la victoria al partido predeterminado (mediante el fraude electoral y el caciquismo), y ese partido formaba gobierno. Cuando el rey lo decidía, disolvía nuevamente las Cortes y le tocaba el turno al otro partido. Este sistema permitió una cierta estabilidad durante 28 años, pero a costa de convertir la democracia en una farsa.",
+        speech: "El turnismo dinástico fue un acuerdo entre Conservadores y Liberales para alternar en el gobierno. El rey disolvía las Cortes y nuevas elecciones daban la victoria al partido predeterminado mediante fraude. Cuando el rey lo decidía, tocaba el turno al otro partido. Este sistema permitió una aparente estabilidad política y evitó revoluciones, pero vaciaba de contenido la democracia parlamentaria. El turnismo se basaba en el caciquismo local y en la falsificación sistemática de las elecciones. A pesar de sus limitaciones democráticas, el sistema funcionó durante casi tres décadas.",
         mermaid: `flowchart TD
             A["🎭 Turnismo Dinástico<br/>(1874-1902)"] --> B["Actores"]
             A --> C["Mecanismo"]
@@ -146,11 +146,11 @@ const historicalContent = [
             
             E --> F["Sistema de control<br/>sin democracia real"]
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style D1 fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
-            style D2 fill:#16a34a,stroke:#000,stroke-width:2px,color:#fff
-            style D3 fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
-            style F fill:#0f766e,stroke:#fff,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style D1 fill:#10b981,stroke:#000,stroke-width:2px,color:#fff
+            style D2 fill:#10b981,stroke:#000,stroke-width:2px,color:#fff
+            style D3 fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
+            style F fill:#059669,stroke:#fff,stroke-width:2px,color:#fff
         `
     },
 
@@ -160,8 +160,8 @@ const historicalContent = [
         category: "Concepto político",
         period: "1874-1902",
         learningGoal: "Analizar el caciquismo como sistema de control electoral y social durante la Restauración.",
-        description: "El caciquismo fue el sistema de control político y social que sustentaba la Restauración en el nivel local. Un cacique era una figura de poder local (terrateniente, comerciante, propietario industrial) que controlaba políticamente a su comunidad mediante diversos mecanismos: coerción económica (amenaza de desempleo o pérdida de tierras), clientelismo (ofrecimiento de favores y empleos), violencia o intimidación, y falsificación de resultados electorales. Los caciques eran intermediarios entre el gobierno central y la población local. Su poder se basaba en la estructura rural de la economía española y la dependencia económica de campesinos y trabajadores. El estado los permitía operar porque garantizaban resultados electorales predecibles que confirmaban al gobierno en el poder. El caciquismo afectaba especialmente a zonas rurales y atrasadas económicamente, perpetuando un sistema político basado en el fraude y la corrupción. La criticidad del caciquismo radicaba en que vaciaba de contenido la democracia formal, convirtiendo las elecciones en rituales sin significado real.",
-        speech: "El caciquismo fue el sistema local que sustentaba la Restauración. Los caciques eran personajes poderosos que controlaban electoralmente sus comunidades mediante presión económica, amenazas y fraude. Utilizaban su poder económico para obligar a la población a votar de determinada manera. El caciquismo permitía manipular elecciones a nivel local.",
+        description: "El caciquismo fue el sistema de control político y social que sustentaba la Restauración en el nivel local. Un cacique era una figura de poder local (terrateniente, comerciante o industrial) que controlaba la población de su zona mediante la presión económica, el clientelismo y la amenaza de violencia. Los caciques manipulaban las elecciones, falsificaban resultados y aseguraban que sus electores votasen según sus instrucciones. Este sistema permitía que los gobiernos centrales controlasen las elecciones sin necesidad de fraude manifiesto a nivel nacional, simplemente coordinándose con los caciques locales.",
+        speech: "El caciquismo fue el sistema local que sustentaba la Restauración. Los caciques eran personajes poderosos que controlaban electoralmente sus comunidades mediante presión económica, amenazas de desempleo y violencia. Un campesino que dependía del cacique para trabajar no podía votar libremente: si votaba mal, perdía su empleo. Los caciques falsificaban actas, compraban votos y eliminaban de los registros a los votantes que no les convenían. Este sistema de corrupción y fraude era conocido como el voto de paja. El caciquismo convertía el sufragio en una farsa absoluta.",
         mermaid: `flowchart TD
             A["🕷️ Caciquismo<br/>Sistema de Control Local"] --> B["Actores"]
             A --> C["Mecanismos de Control"]
@@ -193,9 +193,9 @@ const historicalContent = [
             
             F --> G["Democracia formal<br/>sin contenido real"]
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style F fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
-            style G fill:#0f766e,stroke:#fff,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style F fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
+            style G fill:#059669,stroke:#fff,stroke-width:2px,color:#fff
         `
     },
 
@@ -205,8 +205,8 @@ const historicalContent = [
         category: "Marco legal",
         period: "1876-1931",
         learningGoal: "Comprender los principios constitucionales y su aplicación práctica durante la Restauración.",
-        description: "La Constitución de 1876 fue el marco legal que sustentó la Restauración durante 55 años (1876-1931). Redactada por moderados liderados por Cánovas, fue una constitución flexible que permitía múltiples interpretaciones. Sus características principales incluyen: la soberanía compartida entre Corona y Cortes (monarquía limitada), un sistema bicameral (Congreso y Senado), sufragio censitario inicialmente (limitado a hombres con cierto nivel de renta), derechos individuales sujetos a leyes ordinarias, y una Iglesia reconocida como confesión del Estado. La flexibilidad de la constitución fue tanto su fortaleza como su debilidad: permitía adaptar el régimen a diferentes circunstancias políticas, pero también facilitaba su manipulación mediante interpretaciones amplias. A pesar de su texto moderado, la constitución fue constantemente violada en la práctica, especialmente en lo referente a derechos políticos y libertades. El cambio de sufragio a universal masculino en 1890 amplió el cuerpo electoral, pero los mecanismos de fraude se mantuvieron. La Constitución de 1876 fue derogada en 1931 con la llegada de la Segunda República.",
-        speech: "La Constitución de 1876 fue el marco legal de la Restauración. Establecía una monarquía limitada, Cortes bicamerales y derechos sujetos a leyes ordinarias. Era flexible, lo que permitía su manipulación e interpretación según conveniencia. El sufragio fue censitario hasta 1890, cuando se hizo universal masculino. La Constitución fue constantemente violada en práctica, aunque formalmente se respetaba.",
+        description: "La Constitución de 1876 fue el marco legal que sustentó la Restauración durante 55 años (1876-1931). Redactada por moderados liderados por Cánovas, fue una constitución flexible que buscaba conciliar tradición y modernidad. Establecía una monarquía limitada, Cortes bicamerales (Senado y Congreso), y una serie de derechos sujetos a desarrollo por leyes ordinarias. Su gran flexibilidad permitía interpretaciones distintas según los gobiernos, lo que facilitaba la aplicación selectiva de derechos. Esta característica hizo que la Constitución fuese un instrumento muy útil para justificar legalmente las prácticas de fraude y caciquismo.",
+        speech: "La Constitución de 1876 fue el marco legal de la Restauración. Establecía una monarquía limitada, Cortes bicamerales y derechos sujetos a leyes ordinarias. Era flexible, lo que permitía que los gobiernos la interpretasen de formas muy distintas. Por ejemplo, permitía tanto el sufragio censitario como el universal, dependiendo de la ley electoral que se aprobase. La Iglesia Católica era reconocida como confesión del Estado, reflejando la ideología conservadora del régimen. Aunque formalmente establecía un sistema constitucional, en la práctica era constantemente violada mediante el fraude electoral y el caciquismo.",
         mermaid: `flowchart TD
             A["📋 Constitución de 1876"] --> B["Pilares Fundamentales"]
             A --> C["Características"]
@@ -230,9 +230,9 @@ const historicalContent = [
             C4 --> E["Permite manipulación<br/>por los gobiernos"]
             E --> F["Régimen de facto vs<br/>de jure"]
             
-            style A fill:#1e3a8a,stroke:#0f766e,stroke-width:3px,color:#fff
-            style F fill:#0f766e,stroke:#fff,stroke-width:2px,color:#fff
-            style D5 fill:#ea580c,stroke:#000,stroke-width:2px,color:#fff
+            style A fill:#2563eb,stroke:#059669,stroke-width:3px,color:#fff
+            style F fill:#059669,stroke:#fff,stroke-width:2px,color:#fff
+            style D5 fill:#f59e0b,stroke:#000,stroke-width:2px,color:#fff
         `
     }
 ];
