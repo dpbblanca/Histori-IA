@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,12 +30,13 @@
 
     <!-- Main Content -->
     <main class="main-container">
+
         <!-- Introduction -->
         <section class="intro-section" aria-labelledby="intro-title">
             <h2 id="intro-title">¿Qué es Histori-IA?</h2>
             <p class="intro-text">
-                Recurso educativo curado que visualiza conceptos e interrelaciones de la Historia de España de 2.º de Bachillerato 
-                mediante mapas conceptuales dinámicos. Los contenidos están seleccionados y diseñados manualmente para potenciar 
+                Recurso educativo curado que visualiza conceptos e interrelaciones de la Historia de España de 2.º de Bachillerato
+                mediante mapas conceptuales dinámicos. Los contenidos están seleccionados y diseñados manualmente para potenciar
                 el aprendizaje significativo.
             </p>
         </section>
@@ -44,14 +45,16 @@
         <section class="search-section" aria-labelledby="search-title">
             <h2 id="search-title" class="sr-only">Búsqueda de contenidos</h2>
             <div class="search-container">
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    class="search-input" 
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
                     placeholder="Busca personajes, procesos o conceptos..."
                     aria-label="Buscar contenidos históricos"
+                    autocomplete="off"
+                    spellcheck="false"
                 />
-                <span class="search-icon">🔍</span>
             </div>
             <div id="searchResults" class="search-results" role="region" aria-live="polite" aria-label="Resultados de búsqueda"></div>
         </section>
@@ -59,18 +62,22 @@
         <!-- Content Selector -->
         <section class="selector-section" aria-labelledby="selector-title">
             <h2 id="selector-title">Contenidos Disponibles</h2>
-            <select id="contentSelector" class="content-select" aria-label="Selecciona un contenido histórico">
-                <option value="">-- Selecciona un contenido --</option>
-            </select>
+            <div class="select-wrapper">
+                <select id="contentSelector" class="content-select" aria-label="Selecciona un contenido histórico">
+                    <option value="">-- Selecciona un contenido --</option>
+                </select>
+            </div>
         </section>
 
         <!-- Content Card -->
         <section id="contentCard" class="content-card hidden" aria-labelledby="card-title">
             <div class="card-header">
-                <h2 id="card-title" class="card-title"></h2>
-                <span class="card-category"></span>
+                <div class="card-header-text">
+                    <h2 id="card-title" class="card-title"></h2>
+                    <span class="card-category"></span>
+                </div>
             </div>
-            
+
             <div class="card-meta">
                 <p><strong>Período:</strong> <span class="card-period"></span></p>
                 <p><strong>Categoría:</strong> <span class="card-cat"></span></p>
@@ -79,7 +86,6 @@
             <div class="card-content">
                 <h3>Descripción</h3>
                 <p class="card-description"></p>
-
                 <h3>Utilidad Didáctica</h3>
                 <p class="card-learning-goal"></p>
             </div>
@@ -87,7 +93,9 @@
             <!-- Diagram Section -->
             <div class="diagram-section">
                 <h3>Mapa Conceptual</h3>
-                <div id="diagramContainer" class="mermaid" role="img" aria-label="Mapa conceptual"></div>
+                <div class="diagram-wrapper">
+                    <div id="diagramContainer" class="mermaid" role="img" aria-label="Mapa conceptual"></div>
+                </div>
             </div>
 
             <!-- Controls -->
@@ -112,15 +120,15 @@
                     <strong>Histori-IA no solicita nombre, correo electrónico, contraseñas, imágenes ni datos identificativos.</strong>
                 </p>
                 <p>
-                    El recurso está pensado para consulta directa mediante URL pública. No se recopilan, almacenan ni procesan 
+                    El recurso está pensado para consulta directa mediante URL pública. No se recopilan, almacenan ni procesan
                     datos personales de ningún tipo.
                 </p>
                 <p>
-                    Si en el futuro se integran cuestionarios de evaluación, estos deberán aplicarse de forma completamente anónima 
+                    Si en el futuro se integran cuestionarios de evaluación, estos deberán aplicarse de forma completamente anónima
                     o mediante códigos no identificativos, sin vincular resultados a datos personales.
                 </p>
                 <p>
-                    El audio generado mediante Web Speech API se procesa localmente en tu dispositivo. No se registran ni envían 
+                    El audio generado mediante Web Speech API se procesa localmente en tu dispositivo. No se registran ni envían
                     transcripciones a servidores externos.
                 </p>
             </div>
@@ -148,6 +156,7 @@
                 </ul>
             </div>
         </section>
+
     </main>
 
     <!-- Footer -->
@@ -160,4 +169,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
