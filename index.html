@@ -7,8 +7,72 @@
     <title>Histori-IA - Mapas Conceptuales de Historia</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        // Mermaid: tema personalizado dark navy + verde neón
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            themeVariables: {
+                // Fondos
+                background:       '#0d1520',
+                mainBkg:          '#172540',
+                secondaryColor:   '#111d2e',
+                tertiaryColor:    '#0d1520',
+                clusterBkg:       '#111d2e',
+
+                // Nodos
+                primaryColor:     '#172540',
+                primaryBorderColor: '#00e5a0',
+                primaryTextColor: '#f0f4f8',
+
+                secondaryBorderColor: '#254068',
+                secondaryTextColor:   '#9ab0c8',
+
+                tertiaryBorderColor:  '#1e3054',
+                tertiaryTextColor:    '#9ab0c8',
+
+                // Líneas y etiquetas
+                lineColor:              '#00e5a0',
+                edgeLabelBackground:    '#111d2e',
+                attributeBackgroundColorEven: '#111d2e',
+                attributeBackgroundColorOdd:  '#172540',
+
+                // Títulos
+                titleColor:       '#00e5a0',
+                nodeTextColor:    '#f0f4f8',
+
+                // Tipografía
+                fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+                fontSize:   '14px',
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+            },
+            mindmap: {
+                useMaxWidth: true,
+            }
+        });
+    </script>
 </head>
 <body>
+
+    <!-- ==================== MODAL ==================== -->
+    <div id="diagramModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Mapa conceptual ampliado" hidden>
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-title">Mapa Conceptual</span>
+                <button id="modalClose" class="modal-close" aria-label="Cerrar mapa">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="diagramModalContent" class="mermaid-modal"></div>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-hint">Pellizca para hacer zoom · Scroll para desplazarte</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="header">
@@ -16,8 +80,6 @@
             <p class="header-eyebrow">RECURSO EDUCATIVO · HISTORIA DE ESPAÑA · 2.º BACHILLERATO</p>
             <h1 class="logo">Histori<span class="logo-accent">-IA</span></h1>
             <p class="tagline">Mapas conceptuales dinámicos para comprender<br>relaciones históricas complejas</p>
-
-            <!-- Info badges -->
             <div class="header-badges">
                 <span class="badge">Historia de España</span>
                 <span class="badge">2.º Bachillerato</span>
@@ -102,10 +164,22 @@
 
             <!-- Diagram Section -->
             <div class="diagram-section">
-                <h3>Mapa Conceptual</h3>
+                <div class="diagram-section-header">
+                    <h3>Mapa Conceptual</h3>
+                    <button id="expandBtn" class="btn-expand" aria-label="Ver mapa ampliado">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <polyline points="9 21 3 21 3 15"></polyline>
+                            <line x1="21" y1="3" x2="14" y2="10"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                        Ampliar
+                    </button>
+                </div>
                 <div class="diagram-wrapper">
                     <div id="diagramContainer" class="mermaid" role="img" aria-label="Mapa conceptual"></div>
                 </div>
+                <p class="diagram-hint">Haz clic en <strong>Ampliar</strong> para ver el mapa a pantalla completa</p>
             </div>
 
             <!-- Controls -->
@@ -126,21 +200,10 @@
         <section id="privacidad" class="privacy-section" aria-labelledby="privacy-title">
             <h2 id="privacy-title">Privacidad y RGPD</h2>
             <div class="privacy-content">
-                <p>
-                    <strong>Histori-IA no solicita nombre, correo electrónico, contraseñas, imágenes ni datos identificativos.</strong>
-                </p>
-                <p>
-                    El recurso está pensado para consulta directa mediante URL pública. No se recopilan, almacenan ni procesan
-                    datos personales de ningún tipo.
-                </p>
-                <p>
-                    Si en el futuro se integran cuestionarios de evaluación, estos deberán aplicarse de forma completamente anónima
-                    o mediante códigos no identificativos, sin vincular resultados a datos personales.
-                </p>
-                <p>
-                    El audio generado mediante Web Speech API se procesa localmente en tu dispositivo. No se registran ni envían
-                    transcripciones a servidores externos.
-                </p>
+                <p><strong>Histori-IA no solicita nombre, correo electrónico, contraseñas, imágenes ni datos identificativos.</strong></p>
+                <p>El recurso está pensado para consulta directa mediante URL pública. No se recopilan, almacenan ni procesan datos personales de ningún tipo.</p>
+                <p>Si en el futuro se integran cuestionarios de evaluación, estos deberán aplicarse de forma completamente anónima o mediante códigos no identificativos, sin vincular resultados a datos personales.</p>
+                <p>El audio generado mediante Web Speech API se procesa localmente en tu dispositivo. No se registran ni envían transcripciones a servidores externos.</p>
             </div>
         </section>
 
@@ -153,6 +216,7 @@
                     <li><strong>Busca:</strong> Escribe en el buscador para localizar contenidos por palabras clave.</li>
                     <li><strong>Selecciona:</strong> Elige un contenido del desplegable de "Contenidos Disponibles".</li>
                     <li><strong>Lee:</strong> Consulta la descripción, utilidad didáctica y mapa conceptual.</li>
+                    <li><strong>Amplía:</strong> Usa el botón <strong>Ampliar</strong> para ver el mapa a pantalla completa.</li>
                     <li><strong>Escucha:</strong> Haz clic en "Escuchar" para oír una explicación en voz alta.</li>
                     <li><strong>Descarga:</strong> Usa "Descargar PDF" para guardar el contenido.</li>
                     <li><strong>Contraste:</strong> El botón "🌓 Contraste" cambia entre tema claro y oscuro.</li>
@@ -178,5 +242,58 @@
 
     <script src="data.js"></script>
     <script src="app.js"></script>
+
+    <!-- Modal controller (independiente de app.js) -->
+    <script>
+        (function () {
+            const modal      = document.getElementById('diagramModal');
+            const modalBody  = document.getElementById('diagramModalContent');
+            const expandBtn  = document.getElementById('expandBtn');
+            const closeBtn   = document.getElementById('modalClose');
+
+            function openModal() {
+                const source = document.getElementById('diagramContainer');
+                if (!source) return;
+
+                // Clone the rendered SVG into the modal
+                modalBody.innerHTML = '';
+                const svgClone = source.querySelector('svg');
+                if (svgClone) {
+                    const clone = svgClone.cloneNode(true);
+                    clone.removeAttribute('width');
+                    clone.removeAttribute('height');
+                    clone.style.width  = '100%';
+                    clone.style.height = 'auto';
+                    clone.style.maxWidth = '100%';
+                    modalBody.appendChild(clone);
+                } else {
+                    modalBody.innerHTML = '<p style="color:#9ab0c8;text-align:center;padding:2rem">El mapa aún se está generando. Inténtalo de nuevo en un momento.</p>';
+                }
+
+                modal.hidden = false;
+                document.body.style.overflow = 'hidden';
+                closeBtn.focus();
+            }
+
+            function closeModal() {
+                modal.hidden = true;
+                document.body.style.overflow = '';
+                if (expandBtn) expandBtn.focus();
+            }
+
+            if (expandBtn) expandBtn.addEventListener('click', openModal);
+            if (closeBtn)  closeBtn.addEventListener('click', closeModal);
+
+            // Close on overlay click
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeModal();
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !modal.hidden) closeModal();
+            });
+        })();
+    </script>
 </body>
 </html>
