@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histori-IA · Espacio Profesorado</title>
+    <style>
+        /* ============================================================
+           DESIGN TOKENS — misma paleta que el recurso del alumnado
+        ============================================================ */
+        :root {
+            --bg:          #0a1628;
+            --surface:     #111d2e;
+            --card:        #1e3054;
+            --border:      #254068;
+            --accent:      #00e5a0;
+            --accent-dim:  #00c288;
+            --text:        #f0f4f8;
+            --muted:       #9ab0c8;
+            --danger:      #ff6b6b;
+            --warning:     #ffd166;
+            --success:     #06d6a0;
+            --info:        #4cc9f0;
+            --radius:      0.5rem;
+            --radius-lg:   1rem;
+            --shadow:      0 4px 24px rgba(0,0,0,.45);
+        }
+        [data-theme="light"] {
+            --bg:      #f0f4f8;
+            --surface: #ffffff;
+            --card:    #e2eaf4;
+            --border:  #c0d0e0;
+            --text:    #1a2a3a;
+            --muted:   #5a7a9a;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* ============================================================
+           LOGIN OVERLAY
+        ============================================================ */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            width: min(380px, 92vw);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .login-logo {
+            font-size: 2rem; font-weight: 800; color: var(--text);
+            letter-spacing: -.03em; margin-bottom: .25rem;
+        }
+        .login-logo span { color: var(--accent); }
+        .login-subtitle {
+            color: var(--muted); font-size: 0.72rem; margin-bottom: 2rem;
+            text-transform: uppercase; letter-spacing: .12em;
+        }
+        .login-field { text-align: left; margin-bottom: .9rem; }
+        .login-field label {
+            display: block; color: var(--muted); font-size: 0.72rem;
+            text-transform: uppercase; letter-spacing: .07em; margin-bottom: .35rem;
+            font-weight: 600;
+        }
+        .login-field input {
+            width: 100%; padding: .6rem .9rem;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); color: var(--text);
+            font-size: 0.9rem; outline: none; transition: border-color .2s;
+        }
+        .login-field input:focus { border-color: var(--accent); }
+        .login-btn {
+            width: 100%; padding: .72rem;
+            background: var(--accent); color: #0a1628;
+            border: none; border-radius: var(--radius);
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; margin-top: .4rem; transition: background .2s;
+        }
+        .login-btn:hover { background: var(--accent-dim); }
+        .login-error {
+            color: var(--danger); font-size: 0.78rem;
+            margin-top: .75rem; display: none;
+        }
+        .login-hint {
+            color: var(--muted); font-size: 0.72rem; margin-top: 1.25rem;
+            line-height: 1.6;
+        }
+        .login-hint code {
+            background: var(--card); padding: .1rem .4rem;
+            border-radius: .25rem; color: var(--accent); font-size: 0.78rem;
+        }
+
+        /* ============================================================
+           MAIN APP
+        ============================================================ */
+        .app { display: none; flex-direction: column; min-height: 100vh; }
+        .app.visible { display: flex; }
+
+        /* ---- TOPBAR ---- */
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: .7rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            gap: 1rem;
+        }
+        .topbar-brand { font-weight: 800; font-size: 1.05rem; letter-spacing: -.02em; }
+        .topbar-brand span { color: var(--accent); }
+        .topbar-label {
+            font-size: 0.68rem; color: var(--muted); text-transform: uppercase;
+            letter-spacing: .12em; margin-top: 2px;
+        }
+        .topbar-actions { display: flex; gap: .45rem; align-items: center; flex-wrap: wrap; }
+        .topbar-btn {
+            padding: .38rem .85rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent; color: var(--muted);
+            font-size: 0.78rem; cursor: pointer; transition: all .2s;
+            text-decoration: none; display: inline-flex; align-items: center; gap: .3rem;
+            white-space: nowrap;
+        }
+        .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .topbar-btn.primary {
+            background: var(--accent); color: #0a1628;
+            border-color: var(--accent); font-weight: 700;
+        }
+        .topbar-btn.primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+
+        /* ---- STATS BAR ---- */
+        .stats-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: .65rem 1.5rem;
+            display: flex; gap: .75rem; overflow-x: auto;
+        }
+        .stat-chip {
+            display: flex; align-items: center; gap: .45rem;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 2rem; padding: .3rem .85rem;
+            white-space: nowrap; font-size: 0.78rem; flex-shrink: 0;
+        }
+        .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .stat-count { font-weight: 700; color: var(--text); }
+        .stat-label { color: var(--muted); }
+
+        .dot-borrador  { background: var(--muted); }
+        .dot-revisado  { background: var(--info); }
+        .dot-validado  { background: var(--warning); }
+        .dot-publicado { background: var(--success); }
+
+        /* ---- WORKSPACE LAYOUT ---- */
+        .workspace {
+            display: grid;
+            grid-template-columns: 285px 1fr;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        @media (max-width: 760px) {
+            .workspace { grid-template-columns: 1fr; overflow: visible; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); max-height: 38vh; }
+            .main-panel { overflow: visible; }
+        }
+
+        /* ---- SIDEBAR ---- */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .sidebar-header {
+            padding: .9rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: .55rem;
+        }
+        .sidebar-title {
+            font-weight: 700; font-size: 0.72rem; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .1em;
+        }
+        .sidebar-search {
+            padding: .4rem .7rem;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); color: var(--text);
+            font-size: 0.82rem; outline: none; width: 100%;
+        }
+        .sidebar-search:focus { border-color: var(--accent); }
+        .sidebar-filters { display: flex; gap: .35rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: .22rem .55rem;
+            border-radius: 2rem; border: 1px solid var(--border);
+            background: transparent; color: var(--muted);
+            font-size: 0.68rem; cursor: pointer; transition: all .2s;
+        }
+        .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-btn.active { background: rgba(0,229,160,.08); }
+
+        .content-list { overflow-y: auto; flex: 1; padding: .4rem; }
+        .content-list-item {
+            padding: .6rem .8rem;
+            border-radius: var(--radius); cursor: pointer;
+            display: flex; align-items: flex-start; gap: .55rem;
+            transition: background .15s; margin-bottom: .2rem;
+            border-left: 3px solid transparent;
+        }
+        .content-list-item:hover { background: var(--card); }
+        .content-list-item.active {
+            background: var(--card); border-left-color: var(--accent);
+        }
+        .item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: .33rem; }
+        .item-info { flex: 1; min-width: 0; }
+        .item-title {
+            font-size: 0.8rem; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: var(--text);
+        }
+        .item-meta { font-size: 0.68rem; color: var(--muted); margin-top: .12rem; }
+        .item-badge {
+            font-size: 0.62rem; font-weight: 700; padding: .13rem .42rem;
+            border-radius: 2rem; flex-shrink: 0; text-transform: uppercase; letter-spacing: .04em;
+        }
+        .badge-borrador  { background: rgba(154,176,200,.15); color: var(--muted); }
+        .badge-revisado  { background: rgba(76,201,240,.15);  color: var(--info); }
+        .badge-validado  { background: rgba(255,209,102,.15); color: var(--warning); }
+        .badge-publicado { background: rgba(6,214,160,.15);   color: var(--success); }
+
+        .empty-list { text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: 0.8rem; }
+
+        /* ---- MAIN PANEL ---- */
+        .main-panel { overflow-y: auto; padding: 1.5rem; }
+
+        /* Welcome state */
+        .welcome-state {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 58vh;
+            text-align: center; color: var(--muted);
+        }
+        .welcome-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .7; }
+        .welcome-state h3 { color: var(--text); margin-bottom: .5rem; font-size: 1.1rem; }
+        .welcome-state p { font-size: 0.85rem; max-width: 320px; line-height: 1.7; }
+        .welcome-cta {
+            margin-top: 1.5rem; padding: .65rem 1.6rem;
+            background: var(--accent); color: #0a1628;
+            border: none; border-radius: var(--radius);
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            transition: background .2s;
+        }
+        .welcome-cta:hover { background: var(--accent-dim); }
+
+        /* ---- FORM ---- */
+        .form-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.4rem; gap: 1rem; flex-wrap: wrap;
+        }
+        .form-header h2 { font-size: 1.05rem; font-weight: 700; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 900px) { .form-grid { grid-template-columns: 1fr; } }
+
+        .form-group { display: flex; flex-direction: column; gap: .38rem; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-label {
+            font-size: 0.72rem; font-weight: 700; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .07em;
+        }
+        .form-required { color: var(--accent); margin-left: .15rem; }
+
+        .form-input, .form-select, .form-textarea {
+            padding: .52rem .8rem;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); color: var(--text);
+            font-size: 0.875rem; font-family: inherit; outline: none;
+            transition: border-color .2s; width: 100%;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+        .form-select option { background: var(--surface); }
+        .form-textarea { resize: vertical; min-height: 75px; line-height: 1.6; }
+        .form-textarea.code-area {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+            font-size: 0.78rem; min-height: 170px; tab-size: 2;
+        }
+        .form-hint { font-size: 0.7rem; color: var(--muted); margin-top: .2rem; }
+
+        /* Status flow */
+        .status-flow {
+            grid-column: 1 / -1;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: .9rem 1rem;
+        }
+        .status-flow-label {
+            font-size: 0.72rem; font-weight: 700; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .07em; margin-bottom: .7rem;
+        }
+        .status-steps { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+        .status-step {
+            display: flex; align-items: center; gap: .3rem;
+            padding: .38rem .9rem;
+            border-radius: 2rem; border: 2px solid var(--border);
+            cursor: pointer; transition: all .2s;
+            font-size: 0.78rem; font-weight: 600; background: transparent; color: var(--muted);
+        }
+        .status-step:hover { border-color: var(--accent); color: var(--accent); }
+        .status-step.active-borrador  { border-color: var(--muted);    background: rgba(154,176,200,.12); color: var(--muted); }
+        .status-step.active-revisado  { border-color: var(--info);     background: rgba(76,201,240,.12);  color: var(--info); }
+        .status-step.active-validado  { border-color: var(--warning);  background: rgba(255,209,102,.12); color: var(--warning); }
+        .status-step.active-publicado { border-color: var(--success);  background: rgba(6,214,160,.12);   color: var(--success); }
+        .status-arrow { color: var(--border); font-size: 1rem; user-select: none; }
+
+        /* Visibility toggle */
+        .visibility-row {
+            grid-column: 1 / -1;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: .75rem 1rem; gap: 1rem;
+        }
+        .visibility-info h4 { font-size: 0.875rem; font-weight: 600; }
+        .visibility-info p  { font-size: 0.72rem; color: var(--muted); margin-top: .15rem; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-track {
+            position: absolute; inset: 0;
+            background: var(--border); border-radius: 12px;
+            cursor: pointer; transition: background .2s;
+        }
+        .toggle-track::after {
+            content: ''; position: absolute;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #fff; top: 3px; left: 3px; transition: transform .2s;
+        }
+        .toggle-switch input:checked + .toggle-track { background: var(--accent); }
+        .toggle-switch input:checked + .toggle-track::after { transform: translateX(20px); }
+
+        /* Mermaid preview */
+        .preview-section {
+            grid-column: 1 / -1;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+        }
+        .preview-header {
+            padding: .55rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .preview-header-label {
+            font-size: 0.72rem; font-weight: 700; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .07em;
+        }
+        .preview-btn {
+            padding: .28rem .75rem;
+            background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); border-radius: var(--radius);
+            font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all .2s;
+        }
+        .preview-btn:hover { background: rgba(0,229,160,.1); }
+        .preview-body {
+            padding: 1rem; min-height: 90px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .preview-placeholder { color: var(--muted); font-size: 0.8rem; text-align: center; }
+        .preview-error {
+            color: var(--danger); font-size: 0.78rem;
+            background: rgba(255,107,107,.05); border: 1px solid rgba(255,107,107,.2);
+            border-radius: var(--radius); padding: .75rem; width: 100%;
+        }
+        #diagramPreview { width: 100%; }
+        #diagramPreview svg { width: 100%; height: auto; display: block; }
+
+        /* Form actions */
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex; gap: .65rem; justify-content: flex-end;
+            padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap;
+            margin-top: .5rem;
+        }
+        .btn {
+            padding: .52rem 1.15rem;
+            border-radius: var(--radius); border: 1px solid var(--border);
+            font-size: 0.875rem; font-weight: 600; cursor: pointer;
+            transition: all .2s; background: transparent; color: var(--text);
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn.btn-accent { background: var(--accent); color: #0a1628; border-color: var(--accent); }
+        .btn.btn-accent:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+        .btn.btn-danger  { color: var(--danger);  border-color: rgba(255,107,107,.4); }
+        .btn.btn-danger:hover  { background: rgba(255,107,107,.08); border-color: var(--danger); }
+        .btn.btn-muted   { color: var(--muted); }
+
+        /* ============================================================
+           EXPORT MODAL
+        ============================================================ */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.72); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 200;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); width: min(660px, 92vw);
+            max-height: 82vh; overflow: hidden;
+            display: flex; flex-direction: column; box-shadow: var(--shadow);
+        }
+        .modal-head {
+            padding: 1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-head h3 { font-size: 1rem; font-weight: 700; }
+        .modal-close {
+            background: none; border: none; color: var(--muted);
+            font-size: 1.2rem; cursor: pointer; line-height: 1;
+        }
+        .modal-close:hover { color: var(--text); }
+        .modal-body-area { padding: 1.4rem; overflow-y: auto; flex: 1; }
+        .modal-body-area p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.7; }
+        .modal-body-area p strong { color: var(--text); }
+        .export-code {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1rem;
+            font-family: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New', monospace;
+            font-size: 0.72rem; color: var(--accent);
+            overflow-x: auto; white-space: pre;
+            max-height: 280px; overflow-y: auto;
+        }
+        .modal-foot {
+            padding: .9rem 1.4rem;
+            border-top: 1px solid var(--border);
+            display: flex; gap: .5rem; justify-content: flex-end;
+        }
+
+        /* ============================================================
+           TOAST NOTIFICATIONS
+        ============================================================ */
+        .toast-container {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            display: flex; flex-direction: column; gap: .45rem; z-index: 500;
+        }
+        .toast {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: .65rem 1rem;
+            font-size: 0.82rem; box-shadow: var(--shadow);
+            display: flex; align-items: center; gap: .5rem;
+            animation: toastIn .25s ease;
+        }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error   { border-left: 3px solid var(--danger); }
+        @keyframes toastIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: none; } }
+
+        /* ============================================================
+           UTILITIES
+        ============================================================ */
+        .hidden { display: none !important; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================
+     LOGIN OVERLAY
+================================================================ -->
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <div class="login-logo">Histori<span>-IA</span></div>
+        <div class="login-subtitle">Espacio Profesorado</div>
+
+        <div class="login-field">
+            <label for="loginUser">Usuario</label>
+            <input type="text" id="loginUser" placeholder="docente" autocomplete="username">
+        </div>
+        <div class="login-field">
+            <label for="loginPass">Contraseña</label>
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="login-btn" onclick="attemptLogin()">Acceder al espacio docente</button>
+        <div id="loginError" class="login-error">Usuario o contraseña incorrectos.</div>
+        <p class="login-hint">
+            Simulación de prototipo.<br>
+            Usuario: <code>docente</code> · Contraseña: <code>histori2026</code>
+        </p>
+    </div>
+</div>
+
+<!-- ================================================================
+     MAIN APP
+================================================================ -->
+<div id="app" class="app">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div>
+            <div class="topbar-brand">Histori<span>-IA</span></div>
+            <div class="topbar-label">Espacio Profesorado</div>
+        </div>
+        <div class="topbar-actions">
+            <button class="topbar-btn primary" onclick="newContent()">+ Nuevo contenido</button>
+            <button class="topbar-btn" onclick="showExportModal()">📤 Exportar datos</button>
+            <a href="index.html" class="topbar-btn" target="_blank">👁 Vista alumnado ↗</a>
+            <button class="topbar-btn" onclick="toggleTheme()" title="Cambiar tema">🌓</button>
+            <button class="topbar-btn" onclick="logout()" title="Cerrar sesión">⏻ Salir</button>
+        </div>
+    </header>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar" id="statsBar"></div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Contenidos</span>
+                <input type="text" class="sidebar-search" id="sidebarSearch"
+                       placeholder="Buscar..." oninput="renderList()">
+                <div class="sidebar-filters">
+                    <button class="filter-btn active" data-filter="all"
+                            onclick="setFilter('all',this)">Todos</button>
+                    <button class="filter-btn" data-filter="borrador"
+                            onclick="setFilter('borrador',this)">Borrador</button>
+                    <button class="filter-btn" data-filter="revisado"
+                            onclick="setFilter('revisado',this)">Revisado</button>
+                    <button class="filter-btn" data-filter="validado"
+                            onclick="setFilter('validado',this)">Validado</button>
+                    <button class="filter-btn" data-filter="publicado"
+                            onclick="setFilter('publicado',this)">Publicado</button>
+                </div>
+            </div>
+            <div class="content-list" id="contentList"></div>
+        </aside>
+
+        <!-- MAIN PANEL -->
+        <main class="main-panel" id="mainPanel">
+
+            <!-- Welcome -->
+            <div class="welcome-state" id="welcomeState">
+                <div class="welcome-icon">📚</div>
+                <h3>Espacio del profesorado</h3>
+                <p>Introduce, revisa, valida y publica contenidos históricos para tu alumnado. Selecciona un contenido de la lista o crea uno nuevo.</p>
+                <button class="welcome-cta" onclick="newContent()">+ Crear primer contenido</button>
+            </div>
+
+            <!-- FORM -->
+            <div id="formArea" class="hidden">
+                <div class="form-header">
+                    <h2 id="formTitle">Nuevo contenido</h2>
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- Título -->
+                    <div class="form-group full">
+                        <label class="form-label" for="fTitle">
+                            Título del contenido<span class="form-required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="fTitle"
+                               placeholder="Ej: Antonio Cánovas del Castillo">
+                    </div>
+
+                    <!-- Período -->
+                    <div class="form-group">
+                        <label class="form-label" for="fPeriod">
+                            Período / Bloque histórico<span class="form-required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="fPeriod"
+                               list="periodList"
+                               placeholder="Ej: Restauración (1874–1923)">
+                        <datalist id="periodList">
+                            <option value="Antiguo Régimen (siglo XVIII)">
+                            <option value="Crisis del Antiguo Régimen (1788–1833)">
+                            <option value="Liberalismo y Carlismo (1833–1868)">
+                            <option value="Sexenio Democrático (1868–1874)">
+                            <option value="Restauración (1874–1923)">
+                            <option value="Crisis del Estado Liberal (1923–1931)">
+                            <option value="Segunda República (1931–1939)">
+                            <option value="Guerra Civil (1936–1939)">
+                            <option value="Franquismo (1939–1975)">
+                            <option value="Transición Democrática (1975–1982)">
+                            <option value="España en Democracia (1982–actualidad)">
+                        </datalist>
+                    </div>
+
+                    <!-- Tipo -->
+                    <div class="form-group">
+                        <label class="form-label" for="fCategory">
+                            Tipo de contenido<span class="form-required">*</span>
+                        </label>
+                        <select class="form-select" id="fCategory">
+                            <option value="">-- Selecciona --</option>
+                            <option value="Personaje">Personaje</option>
+                            <option value="Proceso">Proceso histórico</option>
+                            <option value="Institución">Institución</option>
+                            <option value="Concepto">Concepto político / ideológico</option>
+                            <option value="Conflicto">Conflicto</option>
+                            <option value="Fecha clave">Fecha clave</option>
+                            <option value="Texto histórico">Texto histórico</option>
+                        </select>
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="form-group full">
+                        <label class="form-label" for="fDesc">Descripción</label>
+                        <textarea class="form-textarea" id="fDesc" rows="4"
+                                  placeholder="Texto descriptivo que verá el alumnado. Explica el personaje, proceso o concepto con rigor histórico y claridad."></textarea>
+                    </div>
+
+                    <!-- Utilidad Didáctica -->
+                    <div class="form-group full">
+                        <label class="form-label" for="fLearning">Utilidad Didáctica</label>
+                        <textarea class="form-textarea" id="fLearning" rows="3"
+                                  placeholder="¿Para qué sirve este contenido? ¿Con qué bloque del temario se relaciona? ¿Qué competencias trabaja el alumnado?"></textarea>
+                    </div>
+
+                    <!-- Diagrama Mermaid -->
+                    <div class="form-group full">
+                        <label class="form-label" for="fDiagram">Código del mapa conceptual (Mermaid)</label>
+                        <textarea class="form-textarea code-area" id="fDiagram" rows="12"
+                                  placeholder="flowchart TD
+    A[Cánovas del Castillo] --> B[Constitución 1876]
+    A --> C[Partido Conservador]
+    A --> D[Turnismo]
+    D --> E[Partido Liberal - Sagasta]
+    B --> F[Sufragio censitario]
+    D --> G[Caciquismo]
+    G --> H[Fraude electoral]"></textarea>
+                        <p class="form-hint">Usa sintaxis <strong>flowchart TD</strong> o <strong>LR</strong>. Haz clic en «Previsualizar» para comprobar el resultado.</p>
+                    </div>
+
+                    <!-- Preview Mermaid -->
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <span class="preview-header-label">Vista previa del mapa conceptual</span>
+                            <button class="preview-btn" onclick="renderPreview()">⟳ Previsualizar</button>
+                        </div>
+                        <div class="preview-body" id="previewBody">
+                            <div class="preview-placeholder">
+                                Escribe el código Mermaid arriba y haz clic en <strong>Previsualizar</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estado / flujo de trabajo -->
+                    <div class="status-flow">
+                        <div class="status-flow-label">Estado del contenido</div>
+                        <div class="status-steps" id="statusSteps">
+                            <button class="status-step" data-status="borrador"
+                                    onclick="setStatus('borrador')">
+                                <span class="stat-dot dot-borrador"></span> Borrador
+                            </button>
+                            <span class="status-arrow">→</span>
+                            <button class="status-step" data-status="revisado"
+                                    onclick="setStatus('revisado')">
+                                <span class="stat-dot dot-revisado"></span> Revisado
+                            </button>
+                            <span class="status-arrow">→</span>
+                            <button class="status-step" data-status="validado"
+                                    onclick="setStatus('validado')">
+                                <span class="stat-dot dot-validado"></span> Validado
+                            </button>
+                            <span class="status-arrow">→</span>
+                            <button class="status-step" data-status="publicado"
+                                    onclick="setStatus('publicado')">
+                                <span class="stat-dot dot-publicado"></span> Publicado
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visibilidad -->
+                    <div class="visibility-row">
+                        <div class="visibility-info">
+                            <h4>Visible para el alumnado</h4>
+                            <p>Solo los contenidos con estado <strong>Publicado</strong> y visibilidad activa aparecen en el espacio del alumnado.</p>
+                        </div>
+                        <label class="toggle-switch" aria-label="Visible para el alumnado">
+                            <input type="checkbox" id="fVisible">
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="form-actions">
+                        <button class="btn btn-muted" onclick="cancelForm()">Cancelar</button>
+                        <button class="btn btn-danger hidden" id="deleteBtn"
+                                onclick="confirmDelete()">🗑 Eliminar</button>
+                        <button class="btn btn-accent" onclick="saveContent()">💾 Guardar</button>
+                    </div>
+
+                </div><!-- /form-grid -->
+            </div><!-- /formArea -->
+
+        </main>
+    </div><!-- /workspace -->
+</div><!-- /app -->
+
+<!-- ================================================================
+     EXPORT MODAL
+================================================================ -->
+<div id="exportModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3>📤 Exportar contenidos a data.js</h3>
+            <button class="modal-close" onclick="hideExportModal()">✕</button>
+        </div>
+        <div class="modal-body-area">
+            <p>
+                Copia el bloque de abajo y reemplaza el array <strong>historicalData</strong>
+                en tu archivo <strong>data.js</strong> del repositorio.<br>
+                Solo se exportan los contenidos con estado <strong>Publicado</strong> y visibilidad activa.
+            </p>
+            <pre class="export-code" id="exportCode"></pre>
+        </div>
+        <div class="modal-foot">
+            <button class="btn" onclick="hideExportModal()">Cerrar</button>
+            <button class="btn btn-accent" onclick="copyExportCode()">📋 Copiar código</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================
+     TOAST CONTAINER
+================================================================ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ================================================================
+     MERMAID
+================================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+    mermaid.initialize({
+        theme: 'dark',
+        themeVariables: {
+            primaryColor:         '#1e3054',
+            primaryBorderColor:   '#00e5a0',
+            primaryTextColor:     '#f0f4f8',
+            secondaryColor:       '#172540',
+            secondaryBorderColor: '#254068',
+            secondaryTextColor:   '#9ab0c8',
+            tertiaryColor:        '#111d2e',
+            tertiaryBorderColor:  '#1e3054',
+            tertiaryTextColor:    '#9ab0c8',
+            lineColor:            '#00c288',
+            edgeLabelBackground:  '#111d2e',
+            titleColor:           '#00e5a0',
+            fontFamily: "'Inter','Segoe UI',system-ui,sans-serif",
+            fontSize:   '13px',
+        },
+        flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+    });
+</script>
+
+<!-- ================================================================
+     APP LOGIC
+================================================================ -->
+<script>
+'use strict';
+
+/* ---- CONSTANTS ---- */
+const STORAGE_KEY  = 'historiaia_contenidos';
+const SESSION_KEY  = 'historiaia_session';
+const CREDS        = { user: 'docente', pass: 'histori2026' };
+
+/* ---- STATE ---- */
+let contents      = [];
+let currentId     = null;
+let currentFilter = 'all';
+let currentStatus = 'borrador';
+
+/* ================================================================
+   PERSISTENCE
+================================================================ */
+function loadContents() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        contents = raw ? JSON.parse(raw) : [];
+    } catch(e) { contents = []; }
+}
+
+function saveAll() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(contents));
+}
+
+function genId() {
+    return 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,6);
+}
+
+/* ================================================================
+   LOGIN / SESSION
+================================================================ */
+function attemptLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+
+    if (u === CREDS.user && p === CREDS.pass) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('app').classList.add('visible');
+        init();
+    } else {
+        errEl.style.display = 'block';
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+    }
+}
+
+function logout() {
+    if (confirm('¿Cerrar sesión?')) {
+        sessionStorage.removeItem(SESSION_KEY);
+        location.reload();
+    }
+}
+
+/* Enter key on password field */
+document.getElementById('loginPass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') attemptLogin();
+});
+document.getElementById('loginUser').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+
+/* Auto-restore session */
+if (sessionStorage.getItem(SESSION_KEY)) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    setTimeout(init, 50);
+}
+
+function init() {
+    loadContents();
+    renderStats();
+    renderList();
+}
+
+/* ================================================================
+   THEME TOGGLE
+================================================================ */
+function toggleTheme() {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+/* ================================================================
+   STATS BAR
+================================================================ */
+function renderStats() {
+    const c = { borrador:0, revisado:0, validado:0, publicado:0 };
+    contents.forEach(item => { if (c[item.status] !== undefined) c[item.status]++; });
+    const visibles = contents.filter(x => x.status === 'publicado' && x.visible).length;
+
+    document.getElementById('statsBar').innerHTML = `
+        <div class="stat-chip">
+            <span class="stat-dot" style="background:var(--muted)"></span>
+            <span class="stat-count">${contents.length}</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-dot dot-borrador"></span>
+            <span class="stat-count">${c.borrador}</span>
+            <span class="stat-label">Borrador</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-dot dot-revisado"></span>
+            <span class="stat-count">${c.revisado}</span>
+            <span class="stat-label">Revisado</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-dot dot-validado"></span>
+            <span class="stat-count">${c.validado}</span>
+            <span class="stat-label">Validado</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-dot dot-publicado"></span>
+            <span class="stat-count">${c.publicado}</span>
+            <span class="stat-label">Publicado</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-dot" style="background:var(--accent)"></span>
+            <span class="stat-count">${visibles}</span>
+            <span class="stat-label">Visible al alumnado</span>
+        </div>
+    `;
+}
+
+/* ================================================================
+   SIDEBAR LIST
+================================================================ */
+function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+}
+
+function renderList() {
+    const q = (document.getElementById('sidebarSearch').value || '').toLowerCase();
+    const filtered = contents.filter(item => {
+        const matchFilter = currentFilter === 'all' || item.status === currentFilter;
+        const matchQ = !q
+            || item.title.toLowerCase().includes(q)
+            || (item.period   || '').toLowerCase().includes(q)
+            || (item.category || '').toLowerCase().includes(q);
+        return matchFilter && matchQ;
+    });
+
+    const listEl = document.getElementById('contentList');
+    if (!filtered.length) {
+        listEl.innerHTML = `<div class="empty-list">Sin contenidos${currentFilter !== 'all' ? ' en este estado' : ''}.</div>`;
+        return;
+    }
+
+    listEl.innerHTML = filtered.map(item => `
+        <div class="content-list-item ${item.id === currentId ? 'active' : ''}"
+             onclick="selectContent('${item.id}')">
+            <span class="item-dot dot-${item.status}"></span>
+            <div class="item-info">
+                <div class="item-title">${esc(item.title)}</div>
+                <div class="item-meta">${esc(item.period || '—')} · ${esc(item.category || '—')}</div>
+            </div>
+            <span class="item-badge badge-${item.status}">${item.status}</span>
+        </div>
+    `).join('');
+}
+
+/* ================================================================
+   FORM — SHOW / HIDE
+================================================================ */
+function showForm(item) {
+    document.getElementById('welcomeState').classList.add('hidden');
+    document.getElementById('formArea').classList.remove('hidden');
+
+    if (item) {
+        document.getElementById('formTitle').textContent = 'Editar contenido';
+        document.getElementById('fTitle').value    = item.title          || '';
+        document.getElementById('fPeriod').value   = item.period         || '';
+        document.getElementById('fCategory').value = item.category       || '';
+        document.getElementById('fDesc').value     = item.description    || '';
+        document.getElementById('fLearning').value = item.learningGoal   || '';
+        document.getElementById('fDiagram').value  = item.diagram        || '';
+        document.getElementById('fVisible').checked = !!item.visible;
+        setStatus(item.status || 'borrador');
+        document.getElementById('deleteBtn').classList.remove('hidden');
+        if (item.diagram) setTimeout(renderPreview, 120);
+        else {
+            document.getElementById('previewBody').innerHTML =
+                `<div class="preview-placeholder">Escribe el código Mermaid arriba y haz clic en <strong>Previsualizar</strong></div>`;
+        }
+    } else {
+        document.getElementById('formTitle').textContent = 'Nuevo contenido';
+        ['fTitle','fPeriod','fDesc','fLearning','fDiagram'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('fCategory').value  = '';
+        document.getElementById('fVisible').checked = false;
+        setStatus('borrador');
+        document.getElementById('deleteBtn').classList.add('hidden');
+        document.getElementById('previewBody').innerHTML =
+            `<div class="preview-placeholder">Escribe el código Mermaid arriba y haz clic en <strong>Previsualizar</strong></div>`;
+    }
+
+    /* Scroll to top of panel */
+    document.getElementById('mainPanel').scrollTop = 0;
+}
+
+function newContent() {
+    currentId = null;
+    showForm(null);
+    renderList();
+}
+
+function selectContent(id) {
+    currentId = id;
+    const item = contents.find(c => c.id === id);
+    if (item) showForm(item);
+    renderList();
+}
+
+function cancelForm() {
+    currentId = null;
+    document.getElementById('formArea').classList.add('hidden');
+    document.getElementById('welcomeState').classList.remove('hidden');
+    renderList();
+}
+
+/* ================================================================
+   STATUS FLOW
+================================================================ */
+function setStatus(s) {
+    currentStatus = s;
+    document.querySelectorAll('.status-step').forEach(btn => {
+        btn.className = 'status-step';
+        if (btn.dataset.status === s) btn.classList.add('active-' + s);
+    });
+}
+
+/* ================================================================
+   SAVE
+================================================================ */
+function saveContent() {
+    const title = document.getElementById('fTitle').value.trim();
+    if (!title) { toast('El título es obligatorio.', 'error'); return; }
+
+    const period      = document.getElementById('fPeriod').value.trim();
+    const category    = document.getElementById('fCategory').value;
+    const description = document.getElementById('fDesc').value.trim();
+    const learningGoal= document.getElementById('fLearning').value.trim();
+    const diagram     = document.getElementById('fDiagram').value.trim();
+    const visible     = document.getElementById('fVisible').checked;
+    const now         = new Date().toISOString();
+
+    if (currentId) {
+        const idx = contents.findIndex(c => c.id === currentId);
+        if (idx > -1) {
+            contents[idx] = {
+                ...contents[idx],
+                title, period, category, description, learningGoal,
+                diagram, status: currentStatus, visible, updatedAt: now
+            };
+        }
+    } else {
+        const newItem = {
+            id: genId(),
+            title, period, category, description, learningGoal,
+            diagram, status: currentStatus, visible,
+            createdAt: now, updatedAt: now
+        };
+        contents.push(newItem);
+        currentId = newItem.id;
+    }
+
+    saveAll();
+    renderStats();
+    renderList();
+    document.getElementById('deleteBtn').classList.remove('hidden');
+    document.getElementById('formTitle').textContent = 'Editar contenido';
+    toast('Contenido guardado correctamente.', 'success');
+}
+
+/* ================================================================
+   DELETE
+================================================================ */
+function confirmDelete() {
+    if (!currentId) return;
+    if (!confirm('¿Eliminar este contenido? Esta acción no se puede deshacer.')) return;
+    contents = contents.filter(c => c.id !== currentId);
+    saveAll();
+    currentId = null;
+    cancelForm();
+    renderStats();
+    renderList();
+    toast('Contenido eliminado.', 'success');
+}
+
+/* ================================================================
+   MERMAID PREVIEW
+================================================================ */
+async function renderPreview() {
+    const code = document.getElementById('fDiagram').value.trim();
+    const body = document.getElementById('previewBody');
+    if (!code) {
+        body.innerHTML = `<div class="preview-placeholder">Escribe el código Mermaid arriba y haz clic en <strong>Previsualizar</strong></div>`;
+        return;
+    }
+    body.innerHTML = '<div class="preview-placeholder">Generando mapa…</div>';
+    try {
+        const uid = 'prev' + Date.now();
+        const { svg } = await mermaid.render(uid, code);
+        body.innerHTML = `<div id="diagramPreview">${svg}</div>`;
+    } catch(err) {
+        body.innerHTML = `<div class="preview-error">
+            ⚠️ Error en el código Mermaid:<br>
+            <code>${esc(err.message || String(err))}</code>
+        </div>`;
+    }
+}
+
+/* ================================================================
+   EXPORT MODAL
+================================================================ */
+function showExportModal() {
+    const published = contents.filter(c => c.status === 'publicado' && c.visible);
+    const header = `// data.js — Histori-IA · Contenidos publicados\n// Generado: ${new Date().toLocaleString('es-ES')}\n// Pega este bloque en data.js sustituyendo el array historicalData\n\nconst historicalData = `;
+    document.getElementById('exportCode').textContent = header + JSON.stringify(published, null, 2) + ';\n';
+    document.getElementById('exportModal').classList.remove('hidden');
+}
+
+function hideExportModal() {
+    document.getElementById('exportModal').classList.add('hidden');
+}
+
+async function copyExportCode() {
+    const text = document.getElementById('exportCode').textContent;
+    try {
+        await navigator.clipboard.writeText(text);
+        toast('Código copiado al portapapeles.', 'success');
+    } catch(e) {
+        toast('No se pudo copiar automáticamente. Selecciona el texto manualmente.', 'error');
+    }
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideExportModal();
+});
+
+/* ================================================================
+   TOAST
+================================================================ */
+function toast(msg, type = 'success') {
+    const c  = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = (type === 'success' ? '✓ ' : '⚠ ') + msg;
+    c.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+}
+
+/* ================================================================
+   UTILS
+================================================================ */
+function esc(s) {
+    return String(s)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+}
+</script>
+
+</body>
+</html>
