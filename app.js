@@ -2,7 +2,6 @@
    HISTORI-IA - LÓGICA DE LA APLICACIÓN
    Manejo de búsqueda, temas, síntesis de voz y funcionalidades
    ============================================================ */
-
 document.addEventListener('DOMContentLoaded', function() {
     // ========== ELEMENTOS DEL DOM ==========
     const searchInput = document.getElementById('searchInput');
@@ -18,29 +17,55 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentContent = null;
     let speechSynthesis = window.speechSynthesis;
     let currentUtterance = null;
-    let isDarkMode = localStorage.getItem('theme') === 'dark';
+    let isDarkMode = localStorage.getItem('theme') !== 'light'; // dark por defecto
 
     // ========== INICIALIZACIÓN ==========
     function init() {
-        // Initialize Mermaid FIRST
-        if (typeof mermaid !== 'undefined') {
-            mermaid.initialize({ 
-                startOnLoad: false,
-                theme: 'default',
-                securityLevel: 'loose',
-                flowchart: {
-                    useMaxWidth: true,
-                    htmlLabels: true,
-                    rankSpacing: 120,
-                    nodeSpacing: 150,
-                    curve: 'linear'
-                }
-            });
-        }
-        
+        initMermaid();
         applyTheme();
         populateSelector();
         attachEventListeners();
+    }
+
+    // ========== INICIALIZACIÓN DE MERMAID ==========
+    function getMermaidTheme() {
+        return isDarkMode ? 'dark' : 'default';
+    }
+
+    function initMermaid() {
+        if (typeof mermaid === 'undefined') return;
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: getMermaidTheme(),
+            securityLevel: 'loose',
+            themeVariables: isDarkMode ? {
+                primaryColor:         '#1e3054',
+                primaryBorderColor:   '#00e5a0',
+                primaryTextColor:     '#f0f4f8',
+                secondaryColor:       '#172540',
+                secondaryBorderColor: '#254068',
+                secondaryTextColor:   '#9ab0c8',
+                tertiaryColor:        '#111d2e',
+                tertiaryBorderColor:  '#1e3054',
+                tertiaryTextColor:    '#9ab0c8',
+                lineColor:            '#00c288',
+                edgeLabelBackground:  '#111d2e',
+                titleColor:           '#00e5a0',
+                nodeTextColor:        '#f0f4f8',
+                fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+                fontSize:   '14px',
+            } : {
+                fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+                fontSize:   '14px',
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                rankSpacing: 120,
+                nodeSpacing: 150,
+                curve: 'linear'
+            }
+        });
     }
 
     // ========== GESTIÓN DE TEMAS ==========
@@ -54,19 +79,18 @@ document.addEventListener('DOMContentLoaded', function() {
         isDarkMode = !isDarkMode;
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
         applyTheme();
-        
-        // Re-renderizar diagrama
+
+        // Re-inicializar Mermaid con el nuevo tema antes de re-renderizar
+        initMermaid();
+
+        // Re-renderizar diagrama con el nuevo tema
         if (currentContent) {
             renderDiagram(currentContent.mermaid);
         }
     }
 
     function updateThemeButtonText() {
-        const texts = {
-            light: '🌓 Contraste',
-            dark: '☀️ Claro'
-        };
-        themeToggle.textContent = isDarkMode ? texts.dark : texts.light;
+        themeToggle.textContent = isDarkMode ? '☀️ Claro' : '🌓 Contraste';
     }
 
     // ========== POBLACIÓN DEL SELECTOR ==========
@@ -75,9 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('historicalContent no está definido en data.js');
             return;
         }
-
         contentSelector.innerHTML = '<option value="">-- Selecciona un contenido --</option>';
-        
+
         historicalContent.forEach(content => {
             const option = document.createElement('option');
             option.value = content.id;
@@ -92,14 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
             searchResults.innerHTML = '';
             return;
         }
-
         const lowerQuery = query.toLowerCase();
-        const results = historicalContent.filter(content => 
+        const results = historicalContent.filter(content =>
             content.title.toLowerCase().includes(lowerQuery) ||
             content.category.toLowerCase().includes(lowerQuery) ||
             content.description.toLowerCase().includes(lowerQuery)
         );
-
         renderSearchResults(results);
     }
 
@@ -108,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
             searchResults.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: var(--spacing-lg);">No se encontraron resultados.</p>';
             return;
         }
-
         searchResults.innerHTML = results.map(content => `
             <div class="search-result-item" tabindex="0" data-id="${content.id}">
                 <strong>${content.title}</strong>
@@ -116,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        // Agregar listeners a los resultados
         document.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', () => selectContentById(item.dataset.id));
             item.addEventListener('keypress', (e) => {
@@ -139,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayContent(content) {
-        // Actualizar tarjeta
         document.querySelector('.card-title').textContent = content.title;
         document.querySelector('.card-category').textContent = content.category;
         document.querySelector('.card-period').textContent = content.period;
@@ -147,14 +165,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.card-description').textContent = content.description;
         document.querySelector('.card-learning-goal').textContent = content.learningGoal;
 
-        // Renderizar diagrama
         renderDiagram(content.mermaid);
 
-        // Mostrar tarjeta
         contentCard.classList.remove('hidden');
         contentCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // Resetear botones de audio
         stopSpeech();
         speakBtn.classList.remove('hidden');
         stopBtn.classList.add('hidden');
@@ -163,30 +178,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== RENDERIZADO DE DIAGRAMAS ==========
     function renderDiagram(mermaidCode) {
         const container = document.getElementById('diagramContainer');
-        
-        // Limpiar contenedor
+
+        // Limpiar contenedor Y eliminar la marca de procesado
         container.innerHTML = '';
-        
+        container.removeAttribute('data-processed'); // <-- FIX: permite re-renderizar
+        container.className = 'mermaid';
+
         // Insertar código Mermaid
         container.textContent = mermaidCode;
         container.setAttribute('role', 'img');
         container.setAttribute('aria-label', 'Mapa conceptual interactivo');
-        
+
         // Renderizar con Mermaid
         if (typeof mermaid !== 'undefined') {
             try {
-                mermaid.run();
+                mermaid.run({ nodes: [container] }); // más preciso que mermaid.run()
             } catch (e) {
-                console.error('Error rendering mermaid:', e);
+                // Fallback para versiones antiguas de Mermaid
+                try {
+                    mermaid.init(undefined, container);
+                } catch (e2) {
+                    console.error('Error rendering mermaid:', e2);
+                }
             }
         }
     }
 
     // ========== SÍNTESIS DE VOZ ==========
     function speak(text) {
-        // Cancelar cualquier reproducción anterior
         speechSynthesis.cancel();
-
         currentUtterance = new SpeechSynthesisUtterance(text);
         currentUtterance.lang = 'es-ES';
         currentUtterance.rate = 0.9;
@@ -199,11 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             speakBtn.setAttribute('aria-disabled', 'true');
             stopBtn.setAttribute('aria-disabled', 'false');
         };
-
-        currentUtterance.onend = () => {
-            stopSpeech();
-        };
-
+        currentUtterance.onend = () => { stopSpeech(); };
         currentUtterance.onerror = (event) => {
             console.error('Error en síntesis de voz:', event.error);
             stopSpeech();
@@ -227,70 +243,52 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Selecciona un contenido primero');
             return;
         }
-
         window.print();
     }
 
     // ========== GESTIÓN DE EVENTOS ==========
     function attachEventListeners() {
-        // Búsqueda en tiempo real
         searchInput.addEventListener('input', (e) => {
             performSearch(e.target.value);
         });
 
-        // Selector desplegable
         contentSelector.addEventListener('change', (e) => {
             if (e.target.value) {
                 selectContentById(e.target.value);
             }
         });
 
-        // Botón de tema
         themeToggle.addEventListener('click', toggleTheme);
 
-        // Botones de audio
         speakBtn.addEventListener('click', () => {
-            if (currentContent) {
-                speak(currentContent.speech);
-            }
+            if (currentContent) speak(currentContent.speech);
         });
 
         stopBtn.addEventListener('click', stopSpeech);
-
-        // Botón de impresión
         printBtn.addEventListener('click', exportToPDF);
 
-        // Atajos de teclado
         document.addEventListener('keydown', (e) => {
-            // Alt+S: Hablar
             if (e.altKey && e.key === 's') {
                 e.preventDefault();
                 speakBtn.click();
             }
-            // Alt+T: Cambiar tema
             if (e.altKey && e.key === 't') {
                 e.preventDefault();
                 themeToggle.click();
             }
-            // Escape: Cerrar búsqueda
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && document.getElementById('diagramModal').hidden) {
                 searchInput.value = '';
                 searchResults.innerHTML = '';
                 searchInput.focus();
             }
         });
 
-        // Prevenir submisión del selector
         contentSelector.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
+            if (e.key === 'Enter') e.preventDefault();
         });
     }
 
     // ========== UTILIDADES DE ACCESIBILIDAD ==========
-    
-    // Anuncio de contenido dinámico para lectores de pantalla
     function announceToScreenReader(message) {
         const announcement = document.createElement('div');
         announcement.setAttribute('role', 'status');
@@ -298,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         announcement.className = 'sr-only';
         announcement.textContent = message;
         document.body.appendChild(announcement);
-        
         setTimeout(() => announcement.remove(), 1000);
     }
 
